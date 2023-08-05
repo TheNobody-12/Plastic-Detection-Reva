@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Plastic Data Line Graph</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div style="width: 80%; margin: auto;">
+        <canvas id="lineChart"></canvas>
+    </div>
+
+    <script>
+        // JSON data
+        const jsonData = {
+            "img_names": [
+                "DJI_0023.jpg",
+                "DJI_0080.jpg",
+                "DJI_0088.jpg",
+                "DJI_0185.jpg",
+                "DJI_0205.jpg",
+                "DJI_0255.jpg",
+                "DJI_0416.jpg",
+                "DJI_0502.jpg"
+            ],
+            "no_of_plastic": [
+                54,
+                76,
+                85,
+                57,
+                22,
+                28,
+                28,
+                36
+            ]
+        };
+
+        var ctx = document.getElementById('lineChart').getContext('2d');
+        var lineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: jsonData.img_names,
+                datasets: [{
+                    label: 'Number of Plastic',
+                    data: jsonData.no_of_plastic,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Image Name'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Plastic'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Data</title>
+</head>
+<body>
+    <h1>Database Data Table</h1>
+    <div id="databaseTableDiv"></div>
+
+    <!-- give button to redirect to linechart -->
+    <a href="/linecharts.html">Line Chart</a>
+
+
+
+    <script>
+        // Fetch data from the Flask route
+        fetch("/db_data")
+            .then(response => response.json())
+            .then(data => {
+                console.log(data); // Check the data received from the Flask route
+
+                // Create and populate the table dynamically
+                const databaseTableDiv = document.getElementById("databaseTableDiv");
+                const filenamesData = data.filenames;
+                const latLonData = data.lat_lon;
+
+                // Function to create the table row
+                const createRow = (rowData) => {
+                    const row = document.createElement("tr");
+                    rowData.forEach((value) => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+                    return row;
+                };
+
+                // Create and populate the Filenames table
+                const filenamesTable = document.createElement("table");
+                const filenamesHeaderRow = createRow(["Unique Filename", "Number of Occurrences"]);
+                filenamesTable.appendChild(filenamesHeaderRow);
+                filenamesData.forEach((filenameData) => {
+                    const row = createRow([filenameData[0], filenameData[1]]);
+                    filenamesTable.appendChild(row);
+                });
+                databaseTableDiv.appendChild(filenamesTable);
+
+                // Create and populate the Latitudes and Longitudes table
+                const latLonTable = document.createElement("table");
+                const latLonHeaderRow = createRow(["Latitude", "Longitude"]);
+                latLonTable.appendChild(latLonHeaderRow);
+                latLonData.forEach((latLonData) => {
+                    const row = createRow([latLonData[0], latLonData[1]]);
+                    latLonTable.appendChild(row);
+                });
+                databaseTableDiv.appendChild(latLonTable);
+            })
+            .catch(error => console.error("Error fetching database data:", error));
+    </script>
+</body>
+</html>

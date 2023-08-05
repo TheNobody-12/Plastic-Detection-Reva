@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block body %}
+<!-- CaRD-->
+<div class="landing-page">
+    <div class="content">
+        <div class="container">
+            <div class="info">
+                <h1>Atlantic Warriors:
+                    </h1>
+                <p>Detect, Defend, Restore: Our Mission to Safeguard Nature from Plastic Menace.</p>
+                <button href="/templates/Utlilites.html" class="btn">Get Started</button>
+            </div>
+            <div class="image">
+                <img src="https://i.postimg.cc/65QxYYzh/001234.png">
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card a {
+        text-decoration: none;
+        /* Remove underline from anchor tags */
+        color: black
+    }
+
+    .card a:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+        /* Add any other styles you want for the hover effect */
+    }
+</style>
+
+
+<section>
+
+    <div class="card-group">
+        <!-- <div class="card">
+            <a href="/templates/predict.html">
+                <img src="https://static.pexels.com/photos/373543/pexels-photo-373543.jpeg" class="card-img-top"
+                    alt="img1">
+                <div class="card-body">
+                    <h5 class="card-title"></h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
+                        additional content. This content is a little bit longer.</p>
+                </div>
+            </a>
+        </div> -->
+
+        <div class="card">
+            <a href="/predict">
+                <img src="https://static.pexels.com/photos/373543/pexels-photo-373543.jpeg" class="card-img-top"
+                    alt="img2">
+                <div class="card-body">
+                    <h5 class="card-title">Object Detection</h5>
+                    <p class="card-text">This gives real time detection of plastic objects in the image.</p>
+                    </p>
+                </div>
+            </a>
+        </div>
+        <div class="card">
+            <a href="/db">
+                <img src="https://static.pexels.com/photos/249203/pexels-photo-249203.jpeg" class="card-img-bottom"
+                    alt="img2">
+                <div class="card-body">
+                    <h5 class="card-title">DataBase</h5>
+                    <p class="card-text">This contain the data of the plastic objects detected.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+    </body>
+</section>
+<!-- </div> -->
+
+<br> <br><br><br>
+{% endblock body %}
