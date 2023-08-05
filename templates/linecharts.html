@@ -1,47 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Plastic Data Line Graph</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-    <div style="width: 80%; margin: auto;">
-        <canvas id="lineChart"></canvas>
-    </div>
+{% extends "base.html" %}
+{% block body %}
 
-    <script>
-        // JSON data
-        const jsonData = {
-            "img_names": [
-                "DJI_0023.jpg",
-                "DJI_0080.jpg",
-                "DJI_0088.jpg",
-                "DJI_0185.jpg",
-                "DJI_0205.jpg",
-                "DJI_0255.jpg",
-                "DJI_0416.jpg",
-                "DJI_0502.jpg"
-            ],
-            "no_of_plastic": [
-                54,
-                76,
-                85,
-                57,
-                22,
-                28,
-                28,
-                36
-            ]
-        };
+<br><br><br><br>
+<div style="width: 80%; height:30%; margin: auto;">
+    <canvas id="lineChart"></canvas>
+</div>
+
+<script>
+    async function fetchData() {
+        const response = await fetch("/linechart");
+        const data = await response.json();
+
+        console.log("Response images:", data[0]); // Check the data received from the Flask route
+        console.log("Response no_of_plastic:", data[1]); // Check the data received from the Flask route
+
+        return [data[0], data[1]];
+    }
+
+    async function drawChart() {
+        const [labels, count] = await fetchData();
 
         var ctx = document.getElementById('lineChart').getContext('2d');
         var lineChart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: jsonData.img_names,
+                labels: labels,
                 datasets: [{
                     label: 'Number of Plastic',
-                    data: jsonData.no_of_plastic,
+                    data: count,
                     borderColor: 'rgba(75, 192, 192, 1)',
                     backgroundColor: 'rgba(75, 192, 192, 0.2)',
                     borderWidth: 1,
@@ -66,6 +52,10 @@
                 }
             }
         });
-    </script>
-</body>
-</html>
+    }
+
+    drawChart();
+</script>
+
+
+{% endblock body %}

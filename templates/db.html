@@ -1,9 +1,6 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Database Data</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% block body %}
+
     <h1>Database Data Table</h1>
     <div id="databaseTableDiv"></div>
 
@@ -57,5 +54,5 @@
             })
             .catch(error => console.error("Error fetching database data:", error));
     </script>
-</body>
-</html>
+
+{% endblock body %}

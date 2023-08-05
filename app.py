@@ -133,12 +133,7 @@ def linechart():
     # Fetch data from the database (for example, using fetch_img_names_and_counts_from_db() function)
     img_names, no_of_plastic = fetch_img_names_and_counts_from_db()
 
-    linedata = {
-        "img_names": img_names,
-        "no_of_plastic": no_of_plastic
-    }
-
-    return jsonify(linedata)
+    return jsonify(img_names, no_of_plastic)
 
 @app.route("/linecharts.html")
 def linecharts():
