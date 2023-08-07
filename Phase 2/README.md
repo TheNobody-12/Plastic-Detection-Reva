@@ -1,1 +1,3 @@
-https://github.com/TheNobody-12/Plastic-Detection-Reva/assets/75840118/67ab2df5-86f9-4bb5-b39d-d3ee5b553a2a
+# Video Demonstration of Prototype for Phase 2
+
+https://github.com/TheNobody-12/Plastic-Detection-Reva/assets/75840118/48a84321-9a99-43fb-99bc-6829b64c2da1
