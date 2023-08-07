@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% block body %}
-
+<center>
+    <h1 style="margin: 50px 0px;">Object Detection</h1>
+</center>
 <!-- Upload Section -->
 <div class="container mt-5">
     <div class="row">
@@ -70,7 +72,7 @@
 </div>
 <br> <br>
 <!-- Canvas -->
-<div class="canvas-container">
+<div class="canvas-container" >
     <canvas id="canvas"></canvas>
 </div>
 
@@ -99,8 +101,13 @@
 </script>
 
 <br> <br>
+<center>
+    <button type="button" class="btn btn-success"> <a href="/db" style="color: rgb(255, 255, 255);"> Get
+        Database</a> </button>
 <br> <br>
-<br>
+    <button type="button" class="btn btn-success"> <a href="/linecharts.html" style="color: rgb(255, 255, 255);"> Get
+            Visualizations</a> </button>
+</center>
 <!-- <div id="objectTable"></div> -->
 <script>
 
@@ -150,36 +157,6 @@
             displayDatabaseData(databaseData);
         }
     });
-
-    // Function to display data from the database
-    function displayDatabaseData(databaseData) {
-        objectTableDiv.innerHTML = "";
-
-        // Create a table to display the data
-        const table = document.createElement("table");
-        const headerRow = document.createElement("tr");
-        const headers = ["filename", "x1", "y1", "x2", "y2", "object_type", "probability", "latitude", "longitude"];
-        headers.forEach((header) => {
-            const th = document.createElement("th");
-            th.textContent = header;
-            headerRow.appendChild(th);
-        });
-        table.appendChild(headerRow);
-
-        // Add rows with data to the table
-        databaseData.forEach((row) => {
-            const dataRow = document.createElement("tr");
-            Object.values(row).forEach((value) => {
-                const td = document.createElement("td");
-                td.textContent = value;
-                dataRow.appendChild(td);
-            });
-            table.appendChild(dataRow);
-        });
-
-        objectTableDiv.appendChild(table);
-
-    }
 
 
     function draw_image_and_boxes(file, boxes) {

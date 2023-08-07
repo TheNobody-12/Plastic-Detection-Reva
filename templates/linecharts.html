@@ -1,11 +1,46 @@
 {% extends "base.html" %}
 {% block body %}
 
+<style>
+    .vis-container>p {
+        padding-left: 15%;
+        font-size: 20px;
+        font-weight: bold;
+    }
+</style>
 <br><br><br><br>
-<div style="width: 80%; height:30%; margin: auto;">
-    <canvas id="lineChart"></canvas>
-</div>
 
+<!-- Linechart -->
+<center>
+    <h1 style="margin: 40px 0px;">Data Visualization</h1>
+</center>
+
+<br><br>
+
+<div class="vis-container">
+
+    <p>Line Chart</p>
+    <div style="width: 80%; height:30%; margin: auto;">
+        <canvas id="lineChart"></canvas>
+    </div>
+
+    <br><br><br><br>
+    <!-- Piechart -->
+    <p>Pie Chart</p>
+    <div style="width: 80%; height:30%; margin: auto;">
+        <canvas id="pieChart"></canvas>
+    </div>
+
+    <!-- bar -->
+
+    <br><br><br><br>
+
+
+    <p>Bar Chart</p>
+    <div style="width: 80%; height:30%; margin: auto;">
+        <canvas id="barChart"></canvas>
+    </div>
+</div>
 <script>
     async function fetchData() {
         const response = await fetch("/linechart");
@@ -53,6 +88,111 @@
             }
         });
     }
+
+    async function drawPieChart() {
+        const [labels, count] = await fetchData();
+
+        // Function to generate a random color in hexadecimal format
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        // Generate random colors for each data point
+        const randomColors = count.map(() => getRandomColor());
+
+        var ctx = document.getElementById('pieChart').getContext('2d');
+        var pieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Number of Plastic',
+                    data: count,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: randomColors, // Use the randomColors array here
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Image Name'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Plastic'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    async function drawBarChart() {
+        const [labels, count] = await fetchData();
+
+        var ctx = document.getElementById('barChart').getContext('2d');
+        var barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Number of Plastic',
+                    data: count,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Image Name'
+                        },
+                        ticks: {
+                            maxRotation: 0,
+                            autoSkip: true,
+                            maxTicksLimit: 10,
+                            padding: 5,
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Number of Plastic'
+                        },
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1,
+                            maxTicksLimit: 5,
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    drawBarChart();
+
+
+
+    drawPieChart();
+
 
     drawChart();
 </script>
