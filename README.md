@@ -9,22 +9,6 @@ This project aims to improve object detection for plastic items using the YOLOv8
 - **Frontend:** Flask
 - **Database:** MySQL
 
-## Project Directory Structure
-
-Main Directory
-├── Phase 1
-│ ├── Model Training Notebooks
-│ └── ...
-├── Phase 2
-│ ├── images
-│ ├── Prototype Code
-│ ├── AtlanticWarriors_Demonstration.mp4
-│ ├── README.md
-│ └── TeamAtlanticWarriors_Phase_2_Slidedeck.pptx
-├── reva
-├── LICENSE
-└── README.md
-
 
 ### Phase 1
 Contains notebooks and resources related to model training.
