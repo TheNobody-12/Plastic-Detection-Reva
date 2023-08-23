@@ -72,7 +72,7 @@
 </div>
 <br> <br>
 <!-- Canvas -->
-<div class="canvas-container" >
+<div class="canvas-container">
     <canvas id="canvas"></canvas>
 </div>
 
@@ -81,6 +81,8 @@
 
 <!-- Location -->
 <div id="locationDiv"></div>
+
+<div id="updateButton"></div>
 
 <script>
     // JavaScript code for pop-up behavior
@@ -102,12 +104,37 @@
 
 <br> <br>
 <center>
-    <button type="button" class="btn btn-success"> <a href="/db" style="color: rgb(255, 255, 255);"> Get
-        Database</a> </button>
+    <div id="map"></div>
 <br> <br>
+    <button type="button" class="btn btn-success"> <a href="/db" style="color: rgb(255, 255, 255);"> Get
+            Database</a> </button>
+    <br> <br>
     <button type="button" class="btn btn-success"> <a href="/linecharts.html" style="color: rgb(255, 255, 255);"> Get
             Visualizations</a> </button>
+
+    
 </center>
+
+
+    <script>
+        const map = L.map('map'); 
+        // Initializes map
+
+        map.setView([51.505, -0.09], 13); 
+        // Sets initial coordinates and zoom level
+
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap'
+        }).addTo(map); 
+        // Sets map data source and associates with map
+
+        let marker, circle, zoomed;
+    </script>
+
+
+
+
 <!-- <div id="objectTable"></div> -->
 <script>
 
@@ -127,7 +154,7 @@
         draw_image_and_boxes(event.target.files[0], boxes);
 
 
-            fetch(`/get_lat_lon/${event.target.files[0].name}`)
+        fetch(`/get_lat_lon/${event.target.files[0].name}`)
             .then(response => response.json())
             .then(data => {
                 console.log("Response data:", data); // Check the data received from the Flask route
@@ -135,6 +162,7 @@
                 // Update the HTML elements with latitude and longitude
                 geolocationDiv.innerHTML = `<h1>Latitude: <span id="latitude">${data[0]}</span></h1>
                                             <h1>Longitude: <span id="longitude">${data[1]}</span></h1>`;
+
 
                 // Fetch location address using the latitude and longitude
                 fetch(`/get_location/${data[0]}/${data[1]}`)
@@ -148,15 +176,41 @@
                                       <h2>Postal Code: ${locationData.postcode}</h2>`;
                     })
                     .catch(error => console.error("Error fetching location data:", error));
+
+                    document.getElementById('updateButton').addEventListener('click', updateMap(data[0], data[1]));
+
+                    function updateMap(latitude, longitude) {
+            
+                        if (isNaN(latitude) || isNaN(longitude)) {
+                            alert("Please enter valid latitude and longitude values.");
+                            return;
+                        }
+            
+                        if (marker) {
+                            map.removeLayer(marker);
+                            map.removeLayer(circle);
+                        }
+            
+                        marker = L.marker([latitude, longitude]).addTo(map);
+                        circle = L.circle([latitude, longitude], { radius: 20 }).addTo(map);
+            
+                        if (!zoomed) {
+                            zoomed = map.fitBounds(circle.getBounds());
+                        }
+            
+                        map.setView([latitude, longitude]);
+                    }
+
             })
             .catch(error => console.error("Error fetching data:", error));
 
-           const databaseResponse = await fetch("/database");
+        const databaseResponse = await fetch("/database");
         if (databaseResponse.ok) {
             const databaseData = await databaseResponse.json();
             displayDatabaseData(databaseData);
         }
     });
+    
 
 
     function draw_image_and_boxes(file, boxes) {

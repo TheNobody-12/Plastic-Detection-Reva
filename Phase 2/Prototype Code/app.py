@@ -413,6 +413,10 @@ def linechart():
 def linecharts():
     return render_template("linecharts.html")
 
+@app.route("/locate")
+def locate():
+    return render_template("locate.html")
+
 
 
 if __name__ == "__main__":
