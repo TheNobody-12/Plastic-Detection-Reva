@@ -2,6 +2,9 @@ import onnxruntime as ort
 from flask import request, Flask, jsonify, render_template
 from waitress import serve
 from PIL import Image
+import pandas as pd
+import plotly.express as px 
+import pandas as pd
 import numpy as np
 import exifread
 import sqlite3
@@ -14,10 +17,10 @@ import uuid
 from geopy.geocoders import Nominatim
 geolocator = Nominatim(user_agent="object-detection-app")
 
+"""
+
+"""
 def detect_objects_on_image(stream):
-    # Your existing object detection code here
-    # For demonstration purposes, let's assume it returns some dummy data
-    # Replace this with the actual object detection code
     input, img_width, img_height = prepare_input(stream)
     output = run_model(input)
     return process_output(output, img_width, img_height)
@@ -259,34 +262,81 @@ def fetch_lat_lon_from_db():
 
 import sqlite3
 
-def fetch_img_names_and_counts_from_db():
-    # Connect to the database
-    db_path = "object_detection_data.db"  # Replace with the actual path to your SQLite database
-    conn = sqlite3.connect(db_path)
+# def fetch_img_names_and_counts_from_db():
+#     # Connect to the database
+#     db_path = "object_detection_data.db"  # Replace with the actual path to your SQLite database
+#     conn = sqlite3.connect(db_path)
+#     cursor = conn.cursor()
+
+#     # Query to get image filenames and their counts from the database
+#     query = """
+#     SELECT filename, COUNT(*) AS count
+#     FROM object_detection_data
+#     GROUP BY filename
+#     """
+
+#     # Execute the query
+#     cursor.execute(query)
+
+#     # Fetch the results
+#     results = cursor.fetchall()
+
+#     # Separate the image filenames and counts into separate lists
+#     img_names = [result[0] for result in results]
+#     no_of_plastic = [result[1] for result in results]
+
+#     # Close the database connection
+#     cursor.close()
+#     conn.close()
+
+#     return img_names, no_of_plastic
+
+
+
+def Bubble_map(db_name):
+    # get the data from the sqlite database 
+    conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
+    # Fetch unique filenames and their count with their unique lat and long from the database
+    cursor.execute("SELECT filename, COUNT(filename), latitude, longitude FROM object_detection_data GROUP BY filename, latitude, longitude")
+    rows = cursor.fetchall()
 
-    # Query to get image filenames and their counts from the database
-    query = """
-    SELECT filename, COUNT(*) AS count
-    FROM object_detection_data
-    GROUP BY filename
-    """
+    # Create a dataframe from the rows
+    df = pd.DataFrame(rows, columns=['filename', 'Plastic_count', 'latitude', 'longitude'])
+    # Mapbox plot
+    mapbox_fig = px.scatter_mapbox(df, lat='latitude', lon='longitude', size='Plastic_count',
+                            color='Plastic_count', color_continuous_scale='plasma',
+                            zoom=18, mapbox_style='open-street-map')
+    mapbox_fig.update_traces(hovertemplate='<b>%{text}</b><br>' +
+                                    'Plastic Count: %{marker.size:,}<br>' +
+                                    'Latitude: %{lat}<br>' +
+                                    'Longitude: %{lon}<br>',
+                        text=df['filename'])
+    
+    # Bar plot
+    bar_fig = px.bar(df, x='filename', y='Plastic_count', color='Plastic_count', color_continuous_scale='plasma')
+    # add filename to the hover data
+    bar_fig.update_traces(hovertemplate='<b>%{text}</b><br>' +
+                                    'Plastic Count: %{y:,}<br>',
+                        text=df['filename'])
+    # line plot
+    line_fig = px.line(df, x='filename', y='Plastic_count')
+    
+    # convert the plots to html
+    mapbox_plot_div = mapbox_fig.to_html(full_html=False)
+    bar_plot_div = bar_fig.to_html(full_html=False)
+    line_plot_div = line_fig.to_html(full_html=False)
 
-    # Execute the query
-    cursor.execute(query)
 
-    # Fetch the results
-    results = cursor.fetchall()
+    return mapbox_plot_div, bar_plot_div, line_plot_div
 
-    # Separate the image filenames and counts into separate lists
-    img_names = [result[0] for result in results]
-    no_of_plastic = [result[1] for result in results]
 
-    # Close the database connection
-    cursor.close()
-    conn.close()
 
-    return img_names, no_of_plastic
+"""
+
+From here the Flask App starts
+"""
+
 
 
 
@@ -400,18 +450,21 @@ def db_data():
 def db():
     return render_template("db.html")
 
+@app.route("/visualize")
+def bubblemap():
+    mapbox, bar, line = Bubble_map("object_detection_data.db")
+    return render_template('visualize.html', mapbox_plot_div=mapbox, bar_plot_div=bar, line_plot_div=line)
 
+# @app.route("/linechart")
+# def linechart():
+#     # Fetch data from the database (for example, using fetch_img_names_and_counts_from_db() function)
+#     img_names, no_of_plastic = fetch_img_names_and_counts_from_db()
 
-@app.route("/linechart")
-def linechart():
-    # Fetch data from the database (for example, using fetch_img_names_and_counts_from_db() function)
-    img_names, no_of_plastic = fetch_img_names_and_counts_from_db()
+#     return jsonify(img_names, no_of_plastic)
 
-    return jsonify(img_names, no_of_plastic)
-
-@app.route("/linecharts.html")
-def linecharts():
-    return render_template("linecharts.html")
+# @app.route("/linecharts.html")
+# def linecharts():
+#     return render_template("linecharts.html")
 
 @app.route("/locate")
 def locate():

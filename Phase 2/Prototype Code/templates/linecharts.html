@@ -19,6 +19,16 @@
 
 <div class="vis-container">
 
+
+    <p>Map Visualization</p>
+    fetch plot data from flask route
+    <div>
+        {{ plot_div | safe }}
+    </div>
+    
+
+    
+
     <p>Line Chart</p>
     <div style="width: 80%; height:30%; margin: auto;">
         <canvas id="lineChart"></canvas>
@@ -40,6 +50,7 @@
     <div style="width: 80%; height:30%; margin: auto;">
         <canvas id="barChart"></canvas>
     </div>
+
 </div>
 <script>
     async function fetchData() {
@@ -187,6 +198,14 @@
         });
     }
 
+   async function bubblemap() {
+    // fetch data from flask route
+    const response = await fetch("/bubblemap");
+    const data = await response.formData();
+    // this is plotly html data converted to string
+    
+   }
+
     drawBarChart();
 
 
@@ -196,6 +215,9 @@
 
     drawChart();
 </script>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
 
 
 {% endblock body %}

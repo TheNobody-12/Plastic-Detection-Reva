@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block body %}
+
+<style>
+    .vis-container>p {
+        padding-left: 15%;
+        font-size: 20px;
+        font-weight: bold;
+    }
+</style> 
+<br><br><br><br>
+
+<!-- Linechart -->
+<center>
+    <h1 style="margin: 40px 0px;">Data Visualization</h1>
+</center>
+
+<br><br>
+
+<div class="vis-container">
+
+    <p>Map Visualization</p>
+    <div style="width: 80%; height:30%; margin: auto;">
+        {{ mapbox_plot_div | safe }}
+    </div>
+    
+
+    
+
+    <p>Line Chart</p>
+    <div style="width: 80%; height:30%; margin: auto;">
+        {{ line_plot_div | safe }}
+    </div>
+
+    <br><br><br><br>
+
+    <!-- bar -->
+
+    <p>Bar Chart</p>
+    <div style="width: 80%; height:30%; margin: auto;">
+        {{ bar_plot_div | safe }}
+    </div>
+
+</div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+{% endblock body %}
