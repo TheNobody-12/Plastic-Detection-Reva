@@ -1,5 +1,8 @@
 import onnxruntime as ort
-from flask import request, Flask, jsonify, render_template
+from flask import request, Flask, jsonify, render_template,session,redirect
+# import session
+from flask_sqlalchemy import SQLAlchemy
+import bcrypt
 from waitress import serve
 from PIL import Image
 import pandas as pd
@@ -260,37 +263,6 @@ def fetch_lat_lon_from_db():
 
     return filenames_data, lat_lon_data
 
-import sqlite3
-
-# def fetch_img_names_and_counts_from_db():
-#     # Connect to the database
-#     db_path = "object_detection_data.db"  # Replace with the actual path to your SQLite database
-#     conn = sqlite3.connect(db_path)
-#     cursor = conn.cursor()
-
-#     # Query to get image filenames and their counts from the database
-#     query = """
-#     SELECT filename, COUNT(*) AS count
-#     FROM object_detection_data
-#     GROUP BY filename
-#     """
-
-#     # Execute the query
-#     cursor.execute(query)
-
-#     # Fetch the results
-#     results = cursor.fetchall()
-
-#     # Separate the image filenames and counts into separate lists
-#     img_names = [result[0] for result in results]
-#     no_of_plastic = [result[1] for result in results]
-
-#     # Close the database connection
-#     cursor.close()
-#     conn.close()
-
-#     return img_names, no_of_plastic
-
 
 
 def Bubble_map(db_name):
@@ -342,11 +314,78 @@ From here the Flask App starts
 
 app = Flask(__name__)
 db_path = "object_detection_data.db"
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db_s = SQLAlchemy(app)
+app.secret_key = 'secret_key'
+
+class User(db_s.Model):
+    id = db_s.Column(db_s.Integer, primary_key=True)
+    name = db_s.Column(db_s.String(100), nullable=False)
+    email = db_s.Column(db_s.String(100), unique=True)
+    password = db_s.Column(db_s.String(100))
+
+    def __init__(self,email,password,name):
+        self.name = name
+        self.email = email
+        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    
+    def check_password(self,password):
+        return bcrypt.checkpw(password.encode('utf-8'),self.password.encode('utf-8'))
+
+with app.app_context():
+    db_s.create_all()
+
+
+@app.route('/register',methods=['GET','POST'])
+def register():
+    if request.method == 'POST':
+        # handle request
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+
+        new_user = User(name=name,email=email,password=password)
+        # add the new user to the database
+        db_s.session.add(new_user)    
+        db_s.session.commit()
+        return redirect('/login')
+
+    return render_template('register.html')
+
+@app.route('/login',methods=['GET','POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        user = User.query.filter_by(email=email).first()
+        
+        if user and user.check_password(password):
+            session['email'] = user.email
+            return redirect('/dashboard')
+        else:
+            return render_template('login.html',error='Invalid user')
+
+    return render_template('login.html')
+
+
+@app.route('/dashboard')
+def dashboard():
+    if session['email']:
+        user = User.query.filter_by(email=session['email']).first()
+        return render_template('index.html',user=user)
+    
+    return redirect('/login')
+
+@app.route('/logout')
+def logout():
+    session.pop('email',None)
+    return redirect('/login')
 
 
 def main():
     # serve(app, host='0.0.0.0', port=8080)
-    app.run(debug=True)
+    app.run(debug=True,port=8080)
 
 
 @app.route("/")
@@ -358,11 +397,19 @@ def root():
 
     # with open("templates/index.html") as file:
     #     return file.read()
-    return render_template("index.html")
+    return render_template("home.html")
+
+@app.route("/home")
+def home():
+    return render_template("home.html")
 
 @app.route("/predict")
 def predict():
     return render_template("predict.html")
+
+@app.route("/login_reg")
+def login_reg():
+    return render_template("login.html")
 
 @app.route("/detect", methods=["POST"])
 def detect():
@@ -439,12 +486,12 @@ def db_data():
     # Fetch data from the database
     filenames_data, lat_lon_data = fetch_lat_lon_from_db()
 
-    db = {
+    d_b = {
         "filenames": filenames_data,
         "lat_lon": lat_lon_data
     }
 
-    return jsonify(db)
+    return jsonify(d_b)
 
 @app.route("/db")
 def db():

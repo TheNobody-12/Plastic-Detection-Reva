@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="path-to-your-owl-carousel-css/owl.carousel.min.css">
+  <link rel="stylesheet" href="path-to-your-owl-carousel-css/owl.theme.default.min.css">
+  <link rel="stylesheet" href="/index.css">
+  <title>Trending Games</title>
+</head>
+<body>x
+  <section class="game-section">
+    <h2 class="line-title">Our Services</h2>
+    <div class="owl-carousel custom-carousel owl-theme no-nav">
+      <div class="item active" style="background-image: url(https://ucarecdn.com/75d7700d-c102-40ff-9ba1-f0641444c616/dota2.jpg);">
+        <div class="item-desc">
+          <h3>Service 1</h3>
+          <p>Proper short description of the Service</p>
+        </div>
+      </div>
+        <div class="item" style="background-image: url(https://ucarecdn.com/2a5f69bc-befa-49f4-acc6-ab1dcae514c7/winter3.jpg);">
+            <div class="item-desc">
+            <h3>Service 2</h3>
+            <p>Proper short description of the Service</p>
+            </div>
+        </div>
+        <div class="item" style="background-image: url(https://ucarecdn.com/ec1918b1-2674-452c-bf61-8f73d8cc40c6/rdr2.jpg);">
+            <div class="item-desc">
+            <h3>Service 3</h3>
+            <p>Proper short description of the Service</p>
+            </div>
+        </div>
+        <div class="item" style="background-image: url(https://ucarecdn.com/6ba9052d-6105-4491-917b-e1a65b68f920/pubg.jpg);">
+            <div class="item-desc">
+            <h3>Service 4</h3>
+            <p>Proper short description of the Service</p>
+            </div>
+        </div>
+        
+    </section>
+  
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".custom-carousel").owlCarousel({
+            items: 1,            // Show only one item at a time
+            loop: false,         // Disable looping
+            margin: 0,           // No margin between items
+            autoWidth: true      // Automatically adjust item width based on content
+            });
+
+            $(".custom-carousel .item").click(function () {
+            $(".custom-carousel .item").not($(this)).removeClass("active");
+            $(this).toggleClass("active");
+            });
+        });
+        </script>
+</body>
+</html>

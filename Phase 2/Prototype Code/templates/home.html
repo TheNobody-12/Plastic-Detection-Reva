@@ -1,126 +1,90 @@
-
-        <div class="content">
-            <div class="container">
-                <div class="info">
-                    <h1>Looking For Inspiration</h1>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Repellendus odit nihil ullam nesciunt
-                        quidem iste, Repellendus odit nihil</p>
-                    <button href="/templates/Utlilites.html" class="btn">Get Started</button>
-                </div>
-                <div class="image">
-                    <img src="https://i.postimg.cc/65QxYYzh/001234.png">
-                </div>
+{% extends "base.html" %}
+{% block body %}
+<!-- CaRD-->
+<div class="landing-page">
+    <div class="content">
+        <div class="container">
+            <div class="info">
+                <h1>Atlantic Warriors</h1>
+                <p>Detect, Defend, Restore: Our Mission to Safeguard Nature from Plastic Menace.</p>
+                <button href="/templates/Utlilites.html" class="btn">Get Started</button>
+            </div>
+            <div class="image">
+                <img src="{{ url_for('static', filename='land_img.png') }}">
             </div>
         </div>
     </div>
-    <!-- End Landing Page -->
+</div>
 
+<style>
+    .card a {
+        text-decoration: none;
+        /* Remove underline from anchor tags */
+        color: black
+    }
 
+    .card a:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+        /* Add any other styles you want for the hover effect */
+    }
+</style>
 
-    <!-- CaRD-->
-    <section>
-        <div class="container text-center">
-            <div class="row">
-                <div class="col">
-                    <div class="card">
-                        <img src="https://static.pexels.com/photos/373543/pexels-photo-373543.jpeg" class="card-img-top"
-                            alt="img1">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional
-                                content. This content is a little bit longer.</p>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <img src="https://static.pexels.com/photos/249203/pexels-photo-249203.jpeg"
-                            class="card-img-bottom" alt="img2">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional
-                                content. This content is a little bit longer.</p>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card">
-                        <img src="https://static.pexels.com/photos/249203/pexels-photo-249203.jpeg"
-                            class="card-img-bottom" alt="img2">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
-                                additional
-                                content. This content is a little bit longer.</p>
-                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-</body>
-</section>
-
-
-
-
-<!-- </div> -->
-
-<br> <br><br><br>
-
-<!-- footer -->
-<footer class="footer">
+<section class="about-area about-one">
     <div class="container">
         <div class="row">
-            <div class="col">
-                <h4>Company</h4>
-                <ul class="list-unstyled">
-                    <li>Home</li>
-                    <li>About Us</li>
-                    <li>Work</li>
-                    <li>Team</li>
-                </ul>
-            </div>
-            <div class="col">
-                <h4>Services</h4>
-                <ul class="list-unstyled">
-                    <li>Home</li>
-                    <li>About Us</li>
-                    <li>Work</li>
-                    <li>Team</li>
-                </ul>
-            </div>
-            <div class="col">
-                <h4>Support</h4>
-                <ul class="list-unstyled">
-                    <li>Home</li>
-                    <li>About Us</li>
-                    <li>Work</li>
-                    <li>Team</li>
-                </ul>
-            </div>
-            <div class="col">
-                <h4>Legal</h4>
-                <ul class="list-unstyled">
-                    <li>Home</li>
-                    <li>About Us</li>
-                    <li>Work</li>
-                    <li>Team</li>
-                </ul>
+            <div class="col-lg-12">
+                <div class="about-title text-center">
+                    <h2 class="title fw-bold">Our Services</h2>
+                </div>
             </div>
         </div>
+        <!-- row -->
+        <div class="row justify-content-center">
+            <a class="col-md-4 col-sm-8" href="/login_reg">
+                <div class="single-about-items">
+                    <center>
+                        <img src="{{ url_for('static', filename='db_img.jpg') }}" alt="img2" width="85%">
+                    </center>
+                    <div class="items-content">
+                        <h4 class="items-title">Database</h4>
+                        <p class="text">
+                            This shows the database from real time data collected from the drone.
+                        </p>
+                    </div>
+                </div>
+                <!-- single about items -->
+            </a>
+            <a class="col-md-4 col-sm-8" href="/login_reg">
+                <div class="single-about-items">
+                    <img src="{{ url_for('static', filename='obj_img.jpg') }}" alt="img3" width="100%">
+                    <div class="items-content">
+                        <h4 class="items-title">Object Detection</h4>
+                        <p class="text">
+                            This allow us to detect the plastic in the drone image.
+                        </p>
+                    </div>
+                </div>
+                <!-- single about items -->
+            </a>
+            <a class="col-md-4 col-sm-8" href="/login_reg">
+                <div class="single-about-items">
+                    <img src="{{ url_for('static', filename='Visualize.jpg') }}" alt="img1" width="100%">
+                    <div class="items-content">
+                        <h4 class="items-title">Visualize</h4>
+                        <p class="text">
+                            Visualization of the data collected from the drone.
+                        </p>
+                    </div>
+                </div>
+                <!-- single about items -->
+            </a>
+        </div>
+        <!-- row -->
     </div>
+    <!-- container -->
+</section>
+<!-- </div> -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"
-        integrity="sha384-Rx+T1VzGupg4BHQYs2gCW9It+akI2MM/mndMCy36UVfodzcJcF0GGLxZIzObiEfa"
-        crossorigin="anonymous"></script>
-    </body>
-
-</html>
+<br> <br>
+{% endblock body %}
