@@ -1,10 +1,115 @@
-{% extends "base.html" %}
-{% block body %}
-<center>
-    <h1 style="margin: 50px 0px;">Object Detection</h1>
-</center>
-<!-- Upload Section -->
-<div class="container mt-5">
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOME</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+    <link rel="stylesheet" href="/static/css/footer.css">
+    <link rel="stylesheet" href="/static/css/nav.css">
+
+    <link rel="stylesheet" href="path-to-your-owl-carousel-css/owl.carousel.min.css">
+    <link rel="stylesheet" href="path-to-your-owl-carousel-css/owl.theme.default.min.css">
+    <link rel="stylesheet" href="/static/css/tiles.css">
+
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+
+    <!-- ... Your existing head content ... -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.4.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+        integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"
+        integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
+
+    <style>
+        #map {
+            height: 550px;
+            width: 750px;
+        }
+    </style>
+
+
+    <!--====== Bootstrap css ======-->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
+
+    <!--====== Line Icons css ======-->
+    <link rel="stylesheet" href="/static/css/lineicons.css" />
+
+    <!--====== Style css ======-->
+    <link rel="stylesheet" href="/static/css/starter.css" />
+
+    <link rel="stylesheet" href="/static/css/about-01.css" />
+    <link rel="stylesheet" href="/static/css/upload.css" />
+</head>
+
+<body>
+    <style>
+        .landing-page a {
+            text-decoration: none;
+            /* Remove underline from anchor tags */
+            color: black
+        }
+    </style>
+    <!-- Start Landing Page -->
+    <nav class="nav">
+        <div class="container">
+            <div class="logo">
+                <a href="/" class="logo">Atlantic <b>Warriors</b></a>
+            </div>
+            <div id="mainListDiv" class="main_list">
+                <ul class="navlinks">
+                    <li><a href="https://github.com/TheNobody-12/Plastic-Detection-Reva"> About Us</a></li>
+                    <li><a href="/login_reg"> Sign IN</a></li>
+                    <li><a href="https://github.com/TheNobody-12/Plastic-Detection-Reva">Info</a></li>
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+    <section class="home">
+    </section>
+
+
+    <!-- Jquery needed -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="js/scripts.js"></script>
+
+    <!-- Function used to shrink nav bar removing paddings and adding black background -->
+    <script>
+        $(document).ready(function () {
+            $('.navTrigger').click(function () {
+                $(this).toggleClass('active');
+                console.log("Clicked menu");
+                $("#mainListDiv").toggleClass("show_list");
+                $("#mainListDiv").fadeIn();
+            });
+
+            $(window).scroll(function () {
+                if ($(document).scrollTop() > 50) {
+                    $('.nav').addClass('affix');
+                    console.log("OK");
+                } else {
+                    $('.nav').removeClass('affix');
+                }
+            });
+        });
+
+    </script> <!-- End Landing Page -->
+
+    <center>
+        <h1 style="margin: 50px 0px;">Object Detection</h1>
+    </center>
+    <!-- Upload Section -->
+    <!-- <div class="container mt-5">
     <div class="row">
         <div class="col-md-6 mx-auto">
             <div class="card">
@@ -16,7 +121,7 @@
                         <div class="form-group">
                             <br><input type="file" idtype="submit" class="btn btn-primary" id="uploadInput"
                                 accept="image/*" required>
-                            <!-- <button idtype="submit" class="btn btn-primary" id="uploadInput">Upload</button> -->
+                            <button idtype="submit" class="btn btn-primary" id="uploadInput">Upload</button>
                             <br>
                         </div>
                     </form>
@@ -24,217 +129,476 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
 
-<!-- Bootstrap JS and jQuery -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<style>
-    /* CSS for the pop-up */
-    .popup {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.7);
-        z-index: 999;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .popup img {
-        max-width: 90%;
-        max-height: 90%;
-    }
-
-    /* Flex container for centering */
-    .canvas-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 100%;
-    }
-
-    /* Style for the canvas */
-    canvas {
-        max-width: 400px;
-        max-height: 100%;
-        border: 2px solid #000;
-    }
-</style>
-
-<!-- HTML content -->
+    <!-- HTML content
 <div class="popup" id="popup">
     <img src="" alt="Enlarged Image" id="popupImage">
 </div>
 <br> <br>
-<!-- Canvas -->
+Canvas
 <div class="canvas-container">
     <canvas id="canvas"></canvas>
-</div>
+</div> -->
 
-<!-- Geolocation -->
-<div id="geolocation"></div>
 
-<!-- Location -->
-<div id="locationDiv"></div>
+    <div id="updateButton"></div>
 
-<div id="updateButton"></div>
 
-<script>
-    // JavaScript code for pop-up behavior
-    const canvas = document.getElementById("canvas");
-    const popup = document.getElementById("popup");
-    const popupImage = document.getElementById("popupImage");
+  
 
-    canvas.addEventListener("click", () => {
-        const imgSrc = canvas.toDataURL(); // Get the image data from the canvas
-        popupImage.src = imgSrc; // Set the source of the pop-up image to the canvas image
-        popup.style.display = "flex"; // Display the pop-up
-    });
 
-    popup.addEventListener("click", () => {
-        popup.style.display = "none"; // Hide the pop-up when clicked outside the image
-    });
 
-</script>
 
-<br> <br>
-<center>
-    <div id="map"></div>
-<br> <br>
-    <button type="button" class="btn btn-success"> <a href="/db" style="color: rgb(255, 255, 255);"> Get
-            Database</a> </button>
-    <br> <br>
-    <button type="button" class="btn btn-success"> <a href="/linecharts.html" style="color: rgb(255, 255, 255);"> Get
-            Visualizations</a> </button>
+    <!-- <div id="objectTable"></div> -->
 
+    <center>
+        <h2>Upload a file</h2>
+        <p class="lead" style="font-size: 16px;">Upload your image to get the <b>Plastic Density</b></p><br>
+    </center>
+
+    <!-- Upload -->
+
+    <form id="file-upload-form" class="uploader">
+        <label class="up" for="file-upload">
+            <div id="file-drag">
+                <!-- <i class="fa fa-download" aria-hidden="true"></i> -->
+                <br>
+                <div id="notimage" class="hidden">Please select an image</div>
+                <!-- <br><input type="file" idtype="submit" class="btn btn-primary" id="uploadInput"
+                            accept="image/*" required> -->
+                <!-- <button idtype="submit" class="btn btn-primary" id="uploadInput">Upload</button> -->
+                <br>
+                <button class="btn btn-primary">
+                    <input type="file" id="file-upload" class="hidden"><br></button>
+                <p>or drop a file, paste an image or URL</p>
+            </div>
+        </label> <br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+        <div id="response" class="hidden">
+            <div id="messages"></div></label>
+            <progress class="progress" id="file-progress" value="0">
+                <span>0</span>%
+            </progress>
+        </div>
+    </form>
+
+    <ul class="tabs">
+        <li class="tab">
+            <input type="radio" name="tabs" checked="checked" id="tab1" />
+            <label class="tb" for="tab1">One</label>
+            <div id="tab-content1" class="content">
+                <!-- <div class="tab-content-left">
+                    <img src="https://blog.codepen.io/wp-content/uploads/2012/06/Button-Fill-Black-Large.png"
+                        width="100" />
+                </div> -->
+                <div class="popup" id="popup">
+                    <img src="" alt="Enlarged Image" id="popupImage">
+                </div>
+                <br> <br>
+                Canvas
+                <div class="canvas-container">
+                    <canvas id="canvas"></canvas>
+                </div>
+
+                <div class="tab-content-right">
+                    <h1>Tab content 1</h1>
+                    <hr />
+                    Geolocation
+                    <div id="geolocation"></div>
     
-</center>
+                    Location
+                    <div id="locationDiv"></div>
+                </div>
+            </div>
+        </li>
+
+
+
+        <li class="tab">
+            <input type="radio" name="tabs" id="tab2" />
+            <label class="tb" for="tab2">Two</label>
+            <div id="tab-content2" class="content">
+                <h1>Tab content 2</h1>
+                <center>
+                    <div id="map" style="width: 600px; height: 450px;"></div>
+                    <br> <br>
+                    <button type="button" class="btn btn-success"> <a href="/db" style="color: rgb(255, 255, 255);"> Get
+                            Database</a> </button>
+                    <br> <br>
+                    <button type="button" class="btn btn-success"> <a href="/linecharts.html" style="color: rgb(255, 255, 255);">
+                            Get
+                            Visualizations</a> </button>
+            
+                </center>
+               
+            </div>
+        </li>
+
+        <!-- <li class="tab">
+            <input type="radio" name="tabs" id="tab3" />
+            <label class="tb" for="tab3">Three</label>
+            <div id="tab-content3" class="content">
+                <h1>Tab content 3</h1>
+                <hr />
+                <h3>Praesent ac accumsan urna. Mauris lorem purus</h3>
+                <br />
+                <p>Suspendisse vulputate nunc ac pretium pulvinar. Morbi pretium quis erat non vehicula. Phasellus
+                    porta dolor velit, vitae consectetur nisl consequat at. Praesent ac accumsan urna. Mauris lorem
+                    purus, pharetra ac ultrices sit amet, pulvinar sed sapien. Phasellus ornare laoreet dui, et
+                    eleifend risus tristique non. Donec lectus dolor, iaculis non tellus vitae, venenatis sagittis
+                    purus. Sed at rhoncus neque. Suspendisse gravida est eu consectetur tincidunt. Aliquam fermentum
+                    gravida fringilla</p>
+            </div>
+        </li>
+
+        <li class="tab">
+            <input type="radio" name="tabs" id="tab4" />
+            <label class="tb" for="tab4">Four</label>
+            <div id="tab-content4" class="content">
+                <h1>Tab content 4</h1>
+                <hr />
+                <h3>Class aptent taciti sociosqu ad litora torquen</h3>
+                <br />
+                <p>Fusce in malesuada ligula. Donec eleifend dui eu mi condimentum interdum. Cras justo tortor,
+                    imperdiet at ante vel, adipiscing venenatis nisl. Donec bibendum porttitor ipsum. Mauris turpis
+                    justo, tristique eget ipsum vel, volutpat lobortis velit. Aliquam sit amet ultrices eros.
+                    Vivamus ut diam sed leo pretium bibendum et sit amet tortor. Proin facilisis urna lobortis
+                    dictum semper. Nulla a imperdiet eros. Class aptent taciti sociosqu ad litora torquent per
+                    conubia nostra, per inceptos himenaeos. Donec et vehicula elit. Cum sociis natoque penatibus et
+                    magnis dis parturient montes, nascetur ridiculus mu</p>
+            </div>
+        </li> -->
+    </ul>
+    <style>
+        /* CSS for the pop-up */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        /* Flex container for centering */
+        .canvas-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Style for the canvas */
+        canvas {
+            max-width: 400px;
+            max-height: 100%;
+            border: 2px solid #000;
+        }
+    </style>
+
+    <br> <br>
+   
 
 
     <script>
-        const map = L.map('map'); 
+        // JavaScript code for pop-up behavior
+        const canvas = document.getElementById("canvas");
+        const popup = document.getElementById("popup");
+        const popupImage = document.getElementById("popupImage");
+
+        canvas.addEventListener("click", () => {
+            const imgSrc = canvas.toDataURL(); // Get the image data from the canvas
+            popupImage.src = imgSrc; // Set the source of the pop-up image to the canvas image
+            popup.style.display = "flex"; // Display the pop-up
+        });
+
+        popup.addEventListener("click", () => {
+            popup.style.display = "none"; // Hide the pop-up when clicked outside the image
+        });
+
+    </script>
+    <script>
+        const map = L.map('map');
         // Initializes map
 
-        map.setView([51.505, -0.09], 13); 
+        map.setView([51.505, -0.09], 13);
         // Sets initial coordinates and zoom level
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
             attribution: '© OpenStreetMap'
-        }).addTo(map); 
+        }).addTo(map);
         // Sets map data source and associates with map
 
         let marker, circle, zoomed;
+    </script>
+    <script>
+        // File Upload
+        function ekUpload() {
+            function Init() {
+                console.log("Upload Initialised");
+
+                var fileSelect = document.getElementById('file-upload'),
+                    fileDrag = document.getElementById('file-drag'),
+                    submitButton = document.getElementById('submit-button');
+
+                document.getElementById('file-upload-btn').addEventListener('click', function () {
+                    fileSelect.click();
+                });
+
+                // Is XHR2 available?
+                var xhr = new XMLHttpRequest();
+                if (xhr.upload) {
+                    // File Drop
+                    fileDrag.addEventListener('dragover', fileDragHover, false);
+                    fileDrag.addEventListener('dragleave', fileDragHover, false);
+                    fileDrag.addEventListener('drop', fileSelectHandler, false);
+                }
+            }
+
+
+            function fileDragHover(e) {
+                var fileDrag = document.getElementById('file-drag');
+
+                e.stopPropagation();
+                e.preventDefault();
+
+                fileDrag.className = (e.type === 'dragover' ? 'hover' : 'modal-body file-upload');
+            }
+
+            function fileSelectHandler(e) {
+                // Fetch FileList object
+                var files = e.target.files || e.dataTransfer.files;
+
+                // Cancel event and hover styling
+                fileDragHover(e);
+
+                // Process all File objects
+                for (var i = 0, f; f = files[i]; i++) {
+                    parseFile(f);
+                    uploadFile(f);
+                }
+            }
+
+            // Output
+            function output(msg) {
+                // Response
+                var m = document.getElementById('messages');
+                m.innerHTML = msg;
+            }
+
+            function parseFile(file) {
+
+                console.log(file.name);
+                output(
+                    '<strong>' + encodeURI(file.name) + '</strong>'
+                );
+
+                // var fileType = file.type;
+                // console.log(fileType);
+                var imageName = file.name;
+
+                var isGood = (/\.(?=gif|jpg|png|jpeg)/gi).test(imageName);
+                if (isGood) {
+                    document.getElementById('start').classList.add("hidden");
+                    document.getElementById('response').classList.remove("hidden");
+                    document.getElementById('notimage').classList.add("hidden");
+                    // Thumbnail Preview
+                    document.getElementById('file-image').classList.remove("hidden");
+                    document.getElementById('file-image').src = URL.createObjectURL(file);
+                }
+                else {
+                    document.getElementById('file-image').classList.add("hidden");
+                    document.getElementById('notimage').classList.remove("hidden");
+                    document.getElementById('start').classList.remove("hidden");
+                    document.getElementById('response').classList.add("hidden");
+                    document.getElementById("file-upload-form").reset();
+                }
+            }
+
+            function setProgressMaxValue(e) {
+                var pBar = document.getElementById('file-progress');
+
+                if (e.lengthComputable) {
+                    pBar.max = e.total;
+                }
+            }
+
+            function updateFileProgress(e) {
+                var pBar = document.getElementById('file-progress');
+
+                if (e.lengthComputable) {
+                    pBar.value = e.loaded;
+                }
+            }
+
+            function uploadFile(file) {
+
+                var xhr = new XMLHttpRequest(),
+                    fileInput = document.getElementById('class-roster-file'),
+                    pBar = document.getElementById('file-progress'),
+                    fileSizeLimit = 1024; // In MB
+                if (xhr.upload) {
+                    // Check if file is less than x MB
+                    if (file.size <= fileSizeLimit * 1024 * 1024) {
+                        // Progress bar
+                        pBar.style.display = 'inline';
+                        xhr.upload.addEventListener('loadstart', setProgressMaxValue, false);
+                        xhr.upload.addEventListener('progress', updateFileProgress, false);
+
+                        // File received / failed
+                        xhr.onreadystatechange = function (e) {
+                            if (xhr.readyState == 4) {
+                                // Everything is good!
+
+                                // progress.className = (xhr.status == 200 ? "success" : "failure");
+                                // document.location.reload(true);
+                            }
+                        };
+
+                        // Start upload
+                        xhr.open('POST', document.getElementById('file-upload-form').action, true);
+                        xhr.setRequestHeader('X-File-Name', file.name);
+                        xhr.setRequestHeader('X-File-Size', file.size);
+                        xhr.setRequestHeader('Content-Type', 'multipart/form-data');
+                        xhr.send(file);
+                    } else {
+                        output('Please upload a smaller file (< ' + fileSizeLimit + ' MB).');
+                    }
+                }
+            }
+
+            // Check for the various File API support.
+            if (window.File && window.FileList && window.FileReader) {
+                Init();
+            } else {
+                document.getElementById('file-drag').style.display = 'none';
+            }
+        }
+        ekUpload();
     </script>
 
 
 
 
-<!-- <div id="objectTable"></div> -->
-<script>
+    <script>
 
-    const input = document.getElementById("uploadInput");
-    const results = document.getElementById("result");
-    const geolocationDiv = document.getElementById("geolocation");
-    const objectTableDiv = document.getElementById("objectTable");
-    input.addEventListener("change", async (event) => {
-        const data = new FormData();
-        data.append("image_file", event.target.files[0], event.target.files[0].name);
-        const response = await fetch("/detect", {
-            method: "post",
-            body: data
-        });
+        const input = document.getElementById("file-upload");
+        const results = document.getElementById("result");
+        const geolocationDiv = document.getElementById("geolocation");
+        const objectTableDiv = document.getElementById("objectTable");
+        input.addEventListener("change", async (event) => {
+            const data = new FormData();
+            data.append("image_file", event.target.files[0], event.target.files[0].name);
+            const response = await fetch("/detect", {
+                method: "post",
+                body: data
+            });
 
-        const boxes = await response.json();
-        draw_image_and_boxes(event.target.files[0], boxes);
+            const boxes = await response.json();
+            draw_image_and_boxes(event.target.files[0], boxes);
 
 
-        fetch(`/get_lat_lon/${event.target.files[0].name}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Response data:", data); // Check the data received from the Flask route
+            fetch(`/get_lat_lon/${event.target.files[0].name}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Response data:", data); // Check the data received from the Flask route
 
-                // Update the HTML elements with latitude and longitude
-                geolocationDiv.innerHTML = `<h1>Latitude: <span id="latitude">${data[0]}</span></h1>
+                    // Update the HTML elements with latitude and longitude
+                    geolocationDiv.innerHTML = `<h1>Latitude: <span id="latitude">${data[0]}</span></h1>
                                             <h1>Longitude: <span id="longitude">${data[1]}</span></h1>`;
 
 
-                // Fetch location address using the latitude and longitude
-                fetch(`/get_location/${data[0]}/${data[1]}`)
-                    .then(response => response.json())
-                    .then(locationData => {
-                        console.log("Location data:", locationData);
-                        // Display the location address on the webpage
-                        const locationDiv = document.getElementById("locationDiv");
-                        locationDiv.innerHTML = `<h1>Location: ${locationData.address}</h1>
+                    // Fetch location address using the latitude and longitude
+                    fetch(`/get_location/${data[0]}/${data[1]}`)
+                        .then(response => response.json())
+                        .then(locationData => {
+                            console.log("Location data:", locationData);
+                            // Display the location address on the webpage
+                            const locationDiv = document.getElementById("locationDiv");
+                            locationDiv.innerHTML = `<h1>Location: ${locationData.address}</h1>
                                                 <h2>Country: ${locationData.country}</h2>
                                       <h2>Postal Code: ${locationData.postcode}</h2>`;
-                    })
-                    .catch(error => console.error("Error fetching location data:", error));
+                        })
+                        .catch(error => console.error("Error fetching location data:", error));
 
                     document.getElementById('updateButton').addEventListener('click', updateMap(data[0], data[1]));
 
                     function updateMap(latitude, longitude) {
-            
+
                         if (isNaN(latitude) || isNaN(longitude)) {
                             alert("Please enter valid latitude and longitude values.");
                             return;
                         }
-            
+
                         if (marker) {
                             map.removeLayer(marker);
                             map.removeLayer(circle);
                         }
-            
+
                         marker = L.marker([latitude, longitude]).addTo(map);
                         circle = L.circle([latitude, longitude], { radius: 20 }).addTo(map);
-            
+
                         if (!zoomed) {
                             zoomed = map.fitBounds(circle.getBounds());
                         }
-            
+
                         map.setView([latitude, longitude]);
                     }
 
-            })
-            .catch(error => console.error("Error fetching data:", error));
+                })
+                .catch(error => console.error("Error fetching data:", error));
 
-        const databaseResponse = await fetch("/database");
-        if (databaseResponse.ok) {
-            const databaseData = await databaseResponse.json();
-            displayDatabaseData(databaseData);
+            const databaseResponse = await fetch("/database");
+            if (databaseResponse.ok) {
+                const databaseData = await databaseResponse.json();
+                displayDatabaseData(databaseData);
+            }
+        });
+
+
+
+        function draw_image_and_boxes(file, boxes) {
+            const img = new Image()
+            img.src = URL.createObjectURL(file);
+            img.onload = () => {
+                const canvas = document.querySelector("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+                ctx.strokeStyle = "#00FF00";
+                ctx.lineWidth = 3;
+                ctx.font = "18px serif";
+                boxes.forEach(([x1, y1, x2, y2, label]) => {
+                    ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+                    ctx.fillStyle = "#00ff00";
+                    const width = ctx.measureText(label).width;
+                    ctx.fillRect(x1, y1, width + 10, 25);
+                    ctx.fillStyle = "#000000";
+                    ctx.fillText(label, x1, y1 + 18);
+                });
+            }
         }
-    });
+    </script>
+
+    <!-- !-- Bootstrap JS and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     
+    </body>
 
-
-    function draw_image_and_boxes(file, boxes) {
-        const img = new Image()
-        img.src = URL.createObjectURL(file);
-        img.onload = () => {
-            const canvas = document.querySelector("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
-            ctx.strokeStyle = "#00FF00";
-            ctx.lineWidth = 3;
-            ctx.font = "18px serif";
-            boxes.forEach(([x1, y1, x2, y2, label]) => {
-                ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-                ctx.fillStyle = "#00ff00";
-                const width = ctx.measureText(label).width;
-                ctx.fillRect(x1, y1, width + 10, 25);
-                ctx.fillStyle = "#000000";
-                ctx.fillText(label, x1, y1 + 18);
-            });
-        }
-    }
-</script>
-
-{% endblock body %}
+</html>

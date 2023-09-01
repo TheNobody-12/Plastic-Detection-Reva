@@ -16,7 +16,7 @@
     </div>
 </div>
 
-<style>
+<!-- <style>
     .card a {
         text-decoration: none;
         /* Remove underline from anchor tags */
@@ -28,63 +28,59 @@
         transition: transform 0.3s ease;
         /* Add any other styles you want for the hover effect */
     }
-</style>
+</style> -->
 
-<section class="about-area about-one">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="about-title text-center">
-                    <h2 class="title fw-bold">Our Services</h2>
-                </div>
+
+<section class="game-section">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="about-title text-center">
+                <h2 class="title fw-bold">Our Services</h2>
             </div>
         </div>
-        <!-- row -->
-        <div class="row justify-content-center">
-            <a class="col-md-4 col-sm-8" href="/login_reg">
-                <div class="single-about-items">
-                    <center>
-                        <img src="{{ url_for('static', filename='db_img.jpg') }}" alt="img2" width="85%">
-                    </center>
-                    <div class="items-content">
-                        <h4 class="items-title">Database</h4>
-                        <p class="text">
-                            This shows the database from real time data collected from the drone.
-                        </p>
-                    </div>
-                </div>
-                <!-- single about items -->
-            </a>
-            <a class="col-md-4 col-sm-8" href="/login_reg">
-                <div class="single-about-items">
-                    <img src="{{ url_for('static', filename='obj_img.jpg') }}" alt="img3" width="100%">
-                    <div class="items-content">
-                        <h4 class="items-title">Object Detection</h4>
-                        <p class="text">
-                            This allow us to detect the plastic in the drone image.
-                        </p>
-                    </div>
-                </div>
-                <!-- single about items -->
-            </a>
-            <a class="col-md-4 col-sm-8" href="/login_reg">
-                <div class="single-about-items">
-                    <img src="{{ url_for('static', filename='Visualize.jpg') }}" alt="img1" width="100%">
-                    <div class="items-content">
-                        <h4 class="items-title">Visualize</h4>
-                        <p class="text">
-                            Visualization of the data collected from the drone.
-                        </p>
-                    </div>
-                </div>
-                <!-- single about items -->
-            </a>
-        </div>
-        <!-- row -->
     </div>
-    <!-- container -->
-</section>
-<!-- </div> -->
+    <center>
+    <div class="owl-carousel custom-carousel owl-theme no-nav">
+      <div class="item active" style="background-image: url(/static/db_img.jpg);" href="/db">
+        <a href="/login_reg"><div class="item-desc">
+          <h3 style="  color: #f2f2f2;">Database</h3>
+          <p>This shows the database from real time data collected from the drone.</p>
+        </div></a>
+      </div>
+        <div class="item" style="background-image: url(/static/obj_img.jpg);" href="/predict">
+            <a href="/login_reg"><div class="item-desc">
+            <h3 style="  color: #f2f2f2;">Object Detection</h3>
+            <p> This allow us to detect the plastic in the drone image.</p>
+            </div></a>
+        </div>
+        <div class="item" style="background-image: url(/static/Visualize.jpg);" >
+            <a href="/login_reg"><div class="item-desc">
+            <h3 style="  color: #f2f2f2;">Visualize</h3>
+            <p>Visualization of the data collected from the drone.</p>
+            </div></a>
+        </div>
+    </center>
+    </section>
+  
+  
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(".custom-carousel").owlCarousel({
+            items: 1,            // Show only one item at a time
+            loop: false,         // Disable looping
+            margin: 0,           // No margin between items
+            autoWidth: true      // Automatically adjust item width based on content
+            });
+
+            $(".custom-carousel .item").click(function () {
+            $(".custom-carousel .item").not($(this)).removeClass("active");
+            $(this).toggleClass("active");
+            });
+        });
+        </script>
+
 
 <br> <br>
 {% endblock body %}
