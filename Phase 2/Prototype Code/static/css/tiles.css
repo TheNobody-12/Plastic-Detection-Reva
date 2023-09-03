@@ -159,7 +159,7 @@ button {
   -webkit-transform: translateY(0);
   transform: translateY(0);
 }
-.game-section .owl-theme.custom-carousel .owl-dots {
+.game-section .owl-theme.custom-carousel {
   margin-top: -20px;
   position: relative;
   z-index: 5;

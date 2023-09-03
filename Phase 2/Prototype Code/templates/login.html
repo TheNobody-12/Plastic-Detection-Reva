@@ -6,43 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/css/login_index.css"> <!-- Link to your CSS stylesheet -->
     <link rel="stylesheet" href="/static/css/footer.css">
+    <link rel="stylesheet" href="/static/css/nav.css">
 
-    <!-- --====== Bootstrap css ======-->
-    <!-- <link rel="stylesheet" href="/static/css/bootstrap.min.css" /> -->
 
-    <!--====== Line Icons css ======-->
-    <link rel="stylesheet" href="/static/css/lineicons.css" />
-
-    <!--====== Style css ======-->
-    <link rel="stylesheet" href="/static/css/starter.css" />
-
-    <!-- <link rel="stylesheet" href="/static/css/about-01.css" /> -->
     <title>Animated Forms</title>
 </head>
 
 <body>
-    <!-- Video Background
-  <video id="video-background" autoplay loop muted>
-    <source src="/bgvideo.mp4" type="video/mp4">
-  </video> -->
-
-    <style>
-        .landing-page a {
-            text-decoration: none;
-            /* Remove underline from anchor tags */
-            color: rgb(255, 252, 252)
-        }
-    </style>
-
-    <nav class="navbar">
-        <div class="navbar-logo">Atlantic Warriors</div>
-        <div class="navbar-sections">
-            <div><a href="/home">Home</a></div>
-            <div class="navbar-section">About</div>
-            <div class="navbar-section">Section 3</div>
-            <div class="navbar-section">Section 4</div>
+ 
+<nav class="nav" style="background-color: black; padding:0px">
+    <div class="container" style="max-width: 1500px;">
+        <div class="logo">
+            <a href="/" class="logo">Atlantic Warriors</a>
         </div>
-    </nav>
+        <div id="mainListDiv" class="main_list">
+            <ul class="navlinks">
+                <li><a href="/about">About Us</a></li>
+                <li><a href="/Services">Our Services</a></li>
+                <li><a href="/Testimonials">Testimonials</a></li>
+                <li><a href="/team">Our Team</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+                <li><a href="/login_reg">Login/Register</a></li>
+                <!-- <li><a href="https://github.com/TheNobody-12/Plastic-Detection-Reva">Info</a></li> -->
+            </ul>
+        </div>
+    </div>
+</nav>
+
+    <br><br>  
+    <br><br>  
     <section class="forms-section">
         <h1 class="section-title"></h1>
         <div class="forms">
@@ -57,12 +49,13 @@
                         <div class="input-block">
                             <label for="email">Email:</label>
                             <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
-                            </div>
-                            <div class="input-block">
+                        </div>
+                        <div class="input-block">
                             <label for="pwd">Password:</label>
-                            <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="password">
-                            </div>
-            
+                            <input type="password" class="form-control" id="pwd" placeholder="Enter password"
+                                name="password">
+                        </div>
+
                     </fieldset>
                     <button type="submit" class="btn-login">Login</button>
                 </form>
@@ -73,66 +66,32 @@
                     <span class="underline"></span>
                 </button>
 
-                <form class="form form-signup"  action="/register" method="POST">
+                <form class="form form-signup" action="/register" method="POST">
                     <fieldset>
-                    <div class="input-block">
-                    <label for="name">Name:</label>
-                    <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
-                    </div>
-                    
-                    <div class="input-block">
-                    <label for="email">Email:</label>
-                    <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
-                    </div>
-    
-                    <div class="input-block">
-                    <label for="pwd">Password:</label>
-                    <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="password">
-                    </div>
-    
-                    <button type="submit"  class="btn-signup">Submit</button>
-                </fieldset>
-                </form>
-    
-                <!-- <form class="form form-signup" action="/register" method="POST">
-                    <fieldset>
-                        <legend>Please, enter your email, password and password confirmation for sign up.</legend>
-                        <div class="form-group">
+                        <div class="input-block">
                             <label for="name">Name:</label>
                             <input type="text" class="form-control" id="name" placeholder="Enter name" name="name">
                         </div>
+
                         <div class="input-block">
-                            <label for="signup-email">E-mail</label>
+                            <label for="email">Email:</label>
                             <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
                         </div>
+
                         <div class="input-block">
-                            <label for="signup-password">Password</label>
+                            <label for="pwd">Password:</label>
                             <input type="password" class="form-control" id="pwd" placeholder="Enter password"
                                 name="password">
                         </div>
-                        <div class="input-block">
-                            <label for="signup-password-confirm">Confirm password</label>
-                            <input id="signup-password-confirm" type="password" required>
-                        </div> 
+
+                        <button type="submit" class="btn-signup">Submit</button>
                     </fieldset>
-                    <button type="submit" class="btn-signup">Continue</button>
-                </form> -->
+                </form>
             </div>
         </div>
     </section>
-    <br><br>
-    <!-- 
-    <footer>
-        <div class="waves">
-          <div class="wave" id="wave1"></div>
-          <div class="wave" id="wave2"></div>
-          <div class="wave" id="wave3"></div>
-          <div class="wave" id="wave4"></div>
-        </div>
 
-        <div class="container">
-            </div>
-      </footer> -->
+    <div class="space" style="height: 60px;"></div>
 
     <script>
         const switchers = [...document.querySelectorAll('.switcher')];
@@ -143,10 +102,39 @@
                 this.parentElement.classList.add('is-active');
             });
         });
-
     </script>
-    <!-- Ionicons Script -->
-    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+
+
+        <style>  
+            /**
+             * Footer Styles
+             */
+            
+            .footer {
+              position: absolute;
+              right: 0;
+              bottom: 0;
+              left: 0;
+              padding: 1rem;
+              background-color: #efefef;
+              text-align: center;
+            }
+    </style>
+    <br><br><br>  
+    <!-- <br><br><br><br>     -->
+              <footer>   
+
+                  <div class="waves">
+                      <div class="wave" id="wave1"></div>
+                      <div class="wave" id="wave2"></div>
+                      <div class="wave" id="wave3"></div>
+                      <div class="wave" id="wave4"></div>
+                  </div>
+                 
+              </footer>
+          
+              <!-- Ionicons Script-- > -->
+            <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
 

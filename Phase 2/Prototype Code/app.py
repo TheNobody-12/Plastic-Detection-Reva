@@ -1,5 +1,5 @@
 import onnxruntime as ort
-from flask import request, Flask, jsonify, render_template,session,redirect
+from flask import request, Flask, jsonify, render_template,session,redirect,url_for,flash
 # import session
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
@@ -18,129 +18,72 @@ import uuid
 
 # use geopy to get location from lat and lon
 from geopy.geocoders import Nominatim
-geolocator = Nominatim(user_agent="object-detection-app")
+geolocator = Nominatim(user_agent="object-detection-app_1}")
+
+
+app = Flask(__name__)
+
+# main_path = os.path.dirname(os.path.realpath(__file__))
+
+# db_s = SQLAlchemy(app)
+
+app.secret_key = 'secret_key'
+
+import sqlite3
+
+# Function to create the database tables
+def create_database_tables(db_path):
+    connection = sqlite3.connect(db_path)
+    cursor = connection.cursor()
+
+    # Create the User table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR(100) NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            password VARCHAR(100) NOT NULL
+        )
+    """)
+
+    # Create the object_detection_data table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS object_detection_data (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER,
+            filename TEXT,
+            x1 INTEGER,
+            y1 INTEGER,
+            x2 INTEGER,
+            y2 INTEGER,
+            object_type TEXT,
+            probability REAL,
+            latitude REAL,
+            longitude REAL,
+            FOREIGN KEY (user_id) REFERENCES user (id)
+        )
+    """)
+
+    # Commit the changes and close the connection
+    connection.commit()
+    connection.close()
+
+    print("Database tables created successfully.")
+
+# Example usage:
+db_path = "REVA.db"
+create_database_tables(db_path)
+
+
+
 
 """
 
+#######################################################################################################################################################################333
+THIS SECTION CONTAIN OBJECT DETECTION RELATED CODE
 """
-def detect_objects_on_image(stream):
-    input, img_width, img_height = prepare_input(stream)
-    output = run_model(input)
-    return process_output(output, img_width, img_height)
 
-
-
-def prepare_input(buf):
-    """
-    Function used to convert input image to tensor,
-    required as an input to YOLOv8 object detection
-    network.
-    :param buf: Uploaded file input stream
-    :return: Numpy array in a shape (3,width,height) where 3 is number of color channels
-    """
-    img = Image.open(buf)
-    img_width, img_height = img.size
-    img = img.resize((2176, 2176))
-    img = img.convert("RGB")
-    input = np.array(img) / 255.0
-    input = input.transpose(2, 0, 1)
-    input = input.reshape(1, 3, 2176, 2176)
-    return input.astype(np.float32), img_width, img_height
-
-
-def run_model(input):
-    """
-    Function used to pass provided input tensor to
-    YOLOv8 neural network and return result
-    :param input: Numpy array in a shape (3,width,height)
-    :return: Raw output of YOLOv8 network as an array of shape (1,84,8400)
-    """
-    model = ort.InferenceSession("Phase2_TeamAtlanticModel.onnx")
-    outputs = model.run(["output0"], {"images":input})
-    return outputs[0]
-
-
-def process_output(output, img_width, img_height):
-    """
-    Function used to convert RAW output from YOLOv8 to an array
-    of detected objects. Each object contain the bounding box of
-    this object, the type of object and the probability
-    :param output: Raw output of YOLOv8 network which is an array of shape (1,84,8400)
-    :param img_width: The width of original image
-    :param img_height: The height of original image
-    :return: Array of detected objects in a format [[x1,y1,x2,y2,object_type,probability],..]
-    """
-    output = output[0].astype(float)
-    output = output.transpose()
-
-    boxes = []
-    for row in output:
-        prob = row[4:].max()
-        if prob < 0.2:
-            continue
-        class_id = row[4:].argmax()
-        label = yolo_classes[class_id]
-        xc, yc, w, h = row[:4]
-        x1 = (xc - w/2) / 2176 * img_width
-        y1 = (yc - h/2) / 2176 * img_height
-        x2 = (xc + w/2) / 2176 * img_width
-        y2 = (yc + h/2) / 2176 * img_height
-        boxes.append([x1, y1, x2, y2, label, prob])
-
-    boxes.sort(key=lambda x: x[5], reverse=True)
-    result = []
-    while len(boxes) > 0:
-        result.append(boxes[0])
-        boxes = [box for box in boxes if iou(box, boxes[0]) < 0.3] 
-
-    return result
-
-
-def iou(box1,box2):
-    """
-    Function calculates "Intersection-over-union" coefficient for specified two boxes
-    https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/.
-    :param box1: First box in format: [x1,y1,x2,y2,object_class,probability]
-    :param box2: Second box in format: [x1,y1,x2,y2,object_class,probability]
-    :return: Intersection over union ratio as a float number
-    """
-    return intersection(box1,box2)/union(box1,box2)
-
-
-def union(box1,box2):
-    """
-    Function calculates union area of two boxes
-    :param box1: First box in format [x1,y1,x2,y2,object_class,probability]
-    :param box2: Second box in format [x1,y1,x2,y2,object_class,probability]
-    :return: Area of the boxes union as a float number
-    """
-    box1_x1,box1_y1,box1_x2,box1_y2 = box1[:4]
-    box2_x1,box2_y1,box2_x2,box2_y2 = box2[:4]
-    box1_area = (box1_x2-box1_x1)*(box1_y2-box1_y1)
-    box2_area = (box2_x2-box2_x1)*(box2_y2-box2_y1)
-    return box1_area + box2_area - intersection(box1,box2)
-
-
-def intersection(box1,box2):
-    """
-    Function calculates intersection area of two boxes
-    :param box1: First box in format [x1,y1,x2,y2,object_class,probability]
-    :param box2: Second box in format [x1,y1,x2,y2,object_class,probability]
-    :return: Area of intersection of the boxes as a float number
-    """
-    box1_x1,box1_y1,box1_x2,box1_y2 = box1[:4]
-    box2_x1,box2_y1,box2_x2,box2_y2 = box2[:4]
-    x1 = max(box1_x1,box2_x1)
-    y1 = max(box1_y1,box2_y1)
-    x2 = min(box1_x2,box2_x2)
-    y2 = min(box1_y2,box2_y2)
-    return (x2-x1)*(y2-y1)
-
-
-# Array of YOLOv8 class labels
-yolo_classes = ["0"]
-
-
+# Location of the image taken fuctions
 
 def get_image_geolocation(file):
     # Function to extract geolocation from image metadata using exifread library
@@ -192,47 +135,146 @@ def convert_dms_to_dd(dms):
 
 
 
-def store_data_in_database(filename, boxes, geolocation):
-    # Function to store the object detection results and geolocation in the SQLite database
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
 
-    # Create the table if it doesn't exist
-    cursor.execute(
-        "CREATE TABLE IF NOT EXISTS object_detection_data ("
-        "filename TEXT,"
-        "x1 INTEGER, y1 INTEGER, x2 INTEGER, y2 INTEGER,"
-        "object_type TEXT, probability REAL,"
-        "latitude REAL, longitude REAL);"
-    )
+# IOU and YOLOv8 classes
 
-      # Generate a unique identifier using a combination of filename and UUID
-    unique_id = f"{filename}_{uuid.uuid4()}"
+def iou(box1,box2):
+    """
+    Function calculates "Intersection-over-union" coefficient for specified two boxes
+    https://pyimagesearch.com/2016/11/07/intersection-over-union-iou-for-object-detection/.
+    :param box1: First box in format: [x1,y1,x2,y2,object_class,probability]
+    :param box2: Second box in format: [x1,y1,x2,y2,object_class,probability]
+    :return: Intersection over union ratio as a float number
+    """
+    return intersection(box1,box2)/union(box1,box2)
 
-    # Insert the data into the database
-    for box in boxes:
-        x1, y1, x2, y2, object_type, probability = box
-        latitude, longitude = geolocation["latitude"], geolocation["longitude"]
-        cursor.execute(
-            "INSERT INTO object_detection_data (filename, x1, y1, x2, y2, object_type, probability, latitude, longitude) "
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            (filename, x1, y1, x2, y2, object_type, probability, latitude, longitude),
-        )
 
-    conn.commit()
-    conn.close()
+def union(box1,box2):
+    """
+    Function calculates union area of two boxes
+    :param box1: First box in format [x1,y1,x2,y2,object_class,probability]
+    :param box2: Second box in format [x1,y1,x2,y2,object_class,probability]
+    :return: Area of the boxes union as a float number
+    """
+    box1_x1,box1_y1,box1_x2,box1_y2 = box1[:4]
+    box2_x1,box2_y1,box2_x2,box2_y2 = box2[:4]
+    box1_area = (box1_x2-box1_x1)*(box1_y2-box1_y1)
+    box2_area = (box2_x2-box2_x1)*(box2_y2-box2_y1)
+    return box1_area + box2_area - intersection(box1,box2)
 
-# ... Rest of the code ...
+
+def intersection(box1,box2):
+    """
+    Function calculates intersection area of two boxes
+    :param box1: First box in format [x1,y1,x2,y2,object_class,probability]
+    :param box2: Second box in format [x1,y1,x2,y2,object_class,probability]
+    :return: Area of intersection of the boxes as a float number
+    """
+    box1_x1,box1_y1,box1_x2,box1_y2 = box1[:4]
+    box2_x1,box2_y1,box2_x2,box2_y2 = box2[:4]
+    x1 = max(box1_x1,box2_x1)
+    y1 = max(box1_y1,box2_y1)
+    x2 = min(box1_x2,box2_x2)
+    y2 = min(box1_y2,box2_y2)
+    return (x2-x1)*(y2-y1)
+
+
+# Array of YOLOv8 class labels
+yolo_classes = ["0"]
+
+
+# function 3
+def process_output(output, img_width, img_height):
+    """
+    Function used to convert RAW output from YOLOv8 to an array
+    of detected objects. Each object contain the bounding box of
+    this object, the type of object and the probability
+    :param output: Raw output of YOLOv8 network which is an array of shape (1,84,8400)
+    :param img_width: The width of original image
+    :param img_height: The height of original image
+    :return: Array of detected objects in a format [[x1,y1,x2,y2,object_type,probability],..]
+    """
+    output = output[0].astype(float)
+    output = output.transpose()
+
+    boxes = []
+    for row in output:
+        prob = row[4:].max()
+        if prob < 0.2:
+            continue
+        class_id = row[4:].argmax()
+        label = yolo_classes[class_id]
+        xc, yc, w, h = row[:4]
+        x1 = (xc - w/2) / 2176 * img_width
+        y1 = (yc - h/2) / 2176 * img_height
+        x2 = (xc + w/2) / 2176 * img_width
+        y2 = (yc + h/2) / 2176 * img_height
+        boxes.append([x1, y1, x2, y2, label, prob])
+
+    boxes.sort(key=lambda x: x[5], reverse=True)
+    result = []
+    while len(boxes) > 0:
+        result.append(boxes[0])
+        boxes = [box for box in boxes if iou(box, boxes[0]) < 0.3] 
+
+    return result
+
+
+# function 3
+def run_model(input):
+    """
+    Function used to pass provided input tensor to
+    YOLOv8 neural network and return result
+    :param input: Numpy array in a shape (3,width,height)
+    :return: Raw output of YOLOv8 network as an array of shape (1,84,8400)
+    """
+    model = ort.InferenceSession("Phase2_TeamAtlanticModel.onnx")
+    outputs = model.run(["output0"], {"images":input})
+    return outputs[0]
+
+
+# function 2
+def prepare_input(buf):
+    """
+    Function used to convert input image to tensor,
+    required as an input to YOLOv8 object detection
+    network.
+    :param buf: Uploaded file input stream
+    :return: Numpy array in a shape (3,width,height) where 3 is number of color channels
+    """
+    img = Image.open(buf)
+    img_width, img_height = img.size
+    img = img.resize((2176, 2176))
+    img = img.convert("RGB")
+    input = np.array(img) / 255.0
+    input = input.transpose(2, 0, 1)
+    input = input.reshape(1, 3, 2176, 2176)
+    return input.astype(np.float32), img_width, img_height
+
+
+# Function 1
+def detect_objects_on_image(stream):
+    input, img_width, img_height = prepare_input(stream)
+    output = run_model(input)
+    return process_output(output, img_width, img_height)
+
+"""
+
+#######################################################################################################################################################################333
+Service Based Function
+"""
 
 
 def fetch_lat_lon_from_db_1(filename):
+    connection = None  # Initialize the connection variable outside the try block
+
     try:
         connection = sqlite3.connect(db_path)
         cursor = connection.cursor()
-
-        # Fetch one of the latitudes and longitudes for the given filename
-        query = "SELECT latitude, longitude FROM object_detection_data WHERE filename = ? LIMIT 1"
-        cursor.execute(query, (filename,))
+        user = session.get("user")
+        # Fetch one of the latitudes and longitudes for the given filename from the database as per user
+        query = "SELECT latitude, longitude FROM object_detection_data WHERE user_id = ? AND filename = ? LIMIT 1"
+        cursor.execute(query, (user, filename))
         result = cursor.fetchone()
 
         return result
@@ -244,18 +286,22 @@ def fetch_lat_lon_from_db_1(filename):
         if connection:
             connection.close()
 
+    # Handle the case where an error occurred
+    return None  # You might want to return an appropriate value or raise an exception here
+
 
 def fetch_lat_lon_from_db():
     # Connect to the database
-    conn = sqlite3.connect("object_detection_data.db")
+    conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Fetch unique filenames and their count from the database
-    cursor.execute("SELECT filename, COUNT(*) as count FROM object_detection_data GROUP BY filename")
+    # Fetch unique filenames and their count from the database as per user
+    user = session.get("user")
+    cursor.execute("SELECT filename, COUNT(filename) FROM object_detection_data WHERE user_id = ? GROUP BY filename", (user,))
     filenames_data = cursor.fetchall()
 
-    # Fetch unique latitudes and longitudes from the database
-    cursor.execute("SELECT DISTINCT latitude, longitude FROM object_detection_data")
+    # Fetch unique latitudes and longitudes from the database as per user
+    cursor.execute( "SELECT latitude, longitude FROM object_detection_data WHERE user_id = ? GROUP BY latitude, longitude", (user,))
     lat_lon_data = cursor.fetchall()
 
     # Close the database connection
@@ -269,8 +315,8 @@ def Bubble_map(db_name):
     # get the data from the sqlite database 
     conn = sqlite3.connect(db_name)
     cursor = conn.cursor()
-    # Fetch unique filenames and their count with their unique lat and long from the database
-    cursor.execute("SELECT filename, COUNT(filename), latitude, longitude FROM object_detection_data GROUP BY filename, latitude, longitude")
+    # Fetch unique filenames and their count with their unique lat and long from the database as per user
+    cursor.execute("SELECT filename, COUNT(filename), latitude, longitude FROM object_detection_data WHERE user_id = ? GROUP BY filename, latitude, longitude", (session.get("user"),))
     rows = cursor.fetchall()
 
     # Create a dataframe from the rows
@@ -306,86 +352,169 @@ def Bubble_map(db_name):
 
 """
 
-From here the Flask App starts
+#######################################################################################################################################################################333
+THIS SECTION CONTAIN DATA BASE RELATED CODE
+
+"""
+# Function to add a user to the database
+
+def get_user_by_email(email):
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+
+        # Fetch the user by email
+        query = "SELECT * FROM User WHERE email = ?"
+        cursor.execute(query, (email,))
+        user = cursor.fetchone()
+
+        return user
+
+    except sqlite3.Error as error:
+        print("Error fetching user by email:", error)
+
+    finally:
+        if connection:
+            connection.close()
+
+    # Handle the case where an error occurred
+    return None  # You might want to return an appropriate value or raise an exception here
+
+
+def add_user(email, password, name):
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+        cursor.execute(
+            "INSERT INTO user (name, email, password) VALUES (?, ?, ?)",
+            (name, email, password)
+        )
+        connection.commit()
+        return True
+    except sqlite3.Error as e:
+        print("Error adding user:", e)
+        return False
+    finally:
+        if connection:
+            connection.close()
+
+# Function to add object detection data to the database
+def add_object_detection_data(user_id, filename, x1, y1, x2, y2, object_type, probability, latitude, longitude):
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+        cursor.execute(
+            "INSERT INTO object_detection_data (user_id, filename, x1, y1, x2, y2, object_type, probability, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (user_id, filename, x1, y1, x2, y2, object_type, probability, latitude, longitude)
+        )
+        connection.commit()
+        return True
+    except sqlite3.Error as e:
+        print("Error adding object detection data:", e)
+        return False
+    finally:
+        if connection:
+            connection.close()
+
+# Function to get object detection data for a user
+def get_object_detection_data(user_id):
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT * FROM object_detection_data WHERE user_id = ?",
+            (user_id,)
+        )
+        return cursor.fetchall()
+    except sqlite3.Error as e:
+        print("Error fetching object detection data:", e)
+        return []
+    finally:
+        if connection:
+            connection.close()
+
+# Function to get a user by user_id
+def get_user(user_id):
+    try:
+        connection = sqlite3.connect(db_path)
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT * FROM user WHERE id = ?",
+            (user_id,)
+        )
+        return cursor.fetchone()
+    except sqlite3.Error as e:
+        print("Error fetching user:", e)
+        return None
+    finally:
+        if connection:
+            connection.close()
+
+
+
+"""
+
+#######################################################################################################################################################################333
+FLASK ROUTES
 """
 
 
-
-
-app = Flask(__name__)
-db_path = "object_detection_data.db"
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-db_s = SQLAlchemy(app)
-app.secret_key = 'secret_key'
-
-class User(db_s.Model):
-    id = db_s.Column(db_s.Integer, primary_key=True)
-    name = db_s.Column(db_s.String(100), nullable=False)
-    email = db_s.Column(db_s.String(100), unique=True)
-    password = db_s.Column(db_s.String(100))
-
-    def __init__(self,email,password,name):
-        self.name = name
-        self.email = email
-        self.password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-    
-    def check_password(self,password):
-        return bcrypt.checkpw(password.encode('utf-8'),self.password.encode('utf-8'))
-
-with app.app_context():
-    db_s.create_all()
-
-
-@app.route('/register',methods=['GET','POST'])
+# ################## Login Register Function ##############################
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        # handle request
+        # Handle registration request
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
 
-        new_user = User(name=name,email=email,password=password)
-        # add the new user to the database
-        db_s.session.add(new_user)    
-        db_s.session.commit()
-        return redirect('/login')
+        # Hash the password
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+        # Add the new user to the database
+        if add_user(email, hashed_password, name):
+            return redirect('/login')
+        else:
+            flash('Error registering user. Please try again.')
 
     return render_template('register.html')
 
-@app.route('/login',methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
 
-        user = User.query.filter_by(email=email).first()
-        
-        if user and user.check_password(password):
-            session['email'] = user.email
+        # Retrieve the user from the database
+        user = get_user_by_email(email)
+
+        if user and bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'):
+            session['user'] = user[0]
             return redirect('/dashboard')
         else:
             return render_template('login.html',error='Invalid user')
 
     return render_template('login.html')
 
-
 @app.route('/dashboard')
 def dashboard():
-    if session['email']:
-        user = User.query.filter_by(email=session['email']).first()
-        return render_template('index.html',user=user)
-    
-    return redirect('/login')
+    if 'user' in session:
+        user_id = session['user']
+        user = get_user(user_id)
+
+        if user:
+            return render_template('index.html', user=user)
+        else:
+            flash('User not found')
+            return redirect('/login')
+    else:
+        return redirect('/login')
 
 @app.route('/logout')
 def logout():
-    session.pop('email',None)
-    return redirect('/login')
+    session.pop('user', None)
+    return redirect(url_for('login'))
 
-
-def main():
-    # serve(app, host='0.0.0.0', port=8080)
-    app.run(debug=True,port=8080)
 
 
 @app.route("/")
@@ -399,41 +528,6 @@ def root():
     #     return file.read()
     return render_template("home.html")
 
-@app.route("/home")
-def home():
-    return render_template("home.html")
-
-@app.route("/predict")
-def predict():
-    return render_template("predict.html")
-
-@app.route("/login_reg")
-def login_reg():
-    return render_template("login.html")
-
-@app.route("/detect", methods=["POST"])
-def detect():
-    """
-    Handler of /detect POST endpoint
-    Receives uploaded file with a name "image_file", passes it
-    through YOLOv8 object detection network and returns an array
-    of bounding boxes along with geolocation from the image metadata.
-    The data is also stored in a SQLite database.
-    :return: a JSON array of objects containing bounding boxes in format [[x1, y1, x2, y2, object_type, probability], ...]
-    """
-    buf = request.files["image_file"]
-    filename = buf.filename
-    print(filename)
-    boxes = detect_objects_on_image(buf.stream)
-
-    # Get geolocation from the image metadata
-    geolocation = get_image_geolocation(buf)
-
-    # Store the data in the SQLite database
-    store_data_in_database(filename,boxes, geolocation)
-
-    # return jsonify(boxes, geolocation)
-    return jsonify(boxes)
 
 # create different route for the database
 @app.route("/database", methods=["GET"])
@@ -443,13 +537,15 @@ def database():
     Retrieves data from the SQLite database and returns it as a JSON array
     :return: a JSON array of objects containing bounding boxes in format [[x1, y1, x2, y2, object_type, probability], ...]
     """
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM object_detection_data")
-    rows = cursor.fetchall()
-    conn.close()
+    # Fetch data from the database
+    filenames_data, lat_lon_data = fetch_lat_lon_from_db()
 
-    return jsonify(rows)
+    d_b = {
+        "filenames": filenames_data,
+        "lat_lon": lat_lon_data
+    }
+
+    return jsonify(d_b)
 
 @app.route("/get_lat_lon/<filename>")
 def get_lat_lon(filename):
@@ -479,6 +575,23 @@ def get_location(lat, lon):
 
     return jsonify(location_data)
 
+# create route to get plastic count for a filename
+@app.route("/get_plastic_count/<filename>")
+def get_plastic_count(filename):
+    # Connect to the database
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Fetch unique filenames and their count from the database as per user
+    user = session.get("user")
+    cursor.execute("SELECT COUNT(filename) FROM object_detection_data WHERE user_id = ? AND filename = ?", (user, filename))
+    plastic_count = cursor.fetchone()[0]
+
+    # Close the database connection
+    conn.close()
+
+    return jsonify(plastic_count)
+
 
 
 @app.route("/db_data")
@@ -486,9 +599,15 @@ def db_data():
     # Fetch data from the database
     filenames_data, lat_lon_data = fetch_lat_lon_from_db()
 
+    # get total number of plastic 
+    total_plastic = 0
+    for i in range(len(filenames_data)):
+        total_plastic += filenames_data[i][1]
+
     d_b = {
         "filenames": filenames_data,
-        "lat_lon": lat_lon_data
+        "lat_lon": lat_lon_data,
+        "total_plastic": total_plastic
     }
 
     return jsonify(d_b)
@@ -499,25 +618,85 @@ def db():
 
 @app.route("/visualize")
 def bubblemap():
-    mapbox, bar, line = Bubble_map("object_detection_data.db")
+    mapbox, bar, line = Bubble_map(db_path)
     return render_template('visualize.html', mapbox_plot_div=mapbox, bar_plot_div=bar, line_plot_div=line)
-
-# @app.route("/linechart")
-# def linechart():
-#     # Fetch data from the database (for example, using fetch_img_names_and_counts_from_db() function)
-#     img_names, no_of_plastic = fetch_img_names_and_counts_from_db()
-
-#     return jsonify(img_names, no_of_plastic)
-
-# @app.route("/linecharts.html")
-# def linecharts():
-#     return render_template("linecharts.html")
 
 @app.route("/locate")
 def locate():
     return render_template("locate.html")
 
 
+@app.route("/home")
+def home():
+    return render_template("home.html")
+
+@app.route("/predict")
+def predict():
+    return render_template("predict.html")
+
+@app.route("/login_reg")
+def login_reg():
+    return render_template("login.html")
+
+
+
+@app.route("/detect", methods=["POST"])
+def detect():
+    # Get the user ID associated with the session (you may need to implement user authentication and session handling)
+    user_id = session.get("user")
+
+    if user_id is None:
+        return jsonify({"error": "User not authenticated"})
+
+    buf = request.files["image_file"]
+    filename = buf.filename
+    print(filename)
+    boxes = detect_objects_on_image(buf.stream)
+
+    # Get geolocation from the image metadata
+    geolocation = get_image_geolocation(buf)
+
+
+    # Save the detected objects to the database
+    for box in boxes:
+        x1, y1, x2, y2, object_type, probability = box
+        add_object_detection_data(user_id, filename, x1, y1, x2, y2, object_type, probability, geolocation["latitude"], geolocation["longitude"])
+
+    return jsonify(boxes)
+
+
+@app.route("/about")
+def about():
+    # redirect to about us id of  home page
+    return redirect(url_for('home', _anchor='AboutUs'))
+
+@app.route("/contact")
+def contact():
+    # redirect to contact us id of  home page
+    return redirect(url_for('home', _anchor='Contact'))
+
+@app.route("/team")
+def team():
+    # redirect to team id of  home page
+    return redirect(url_for('home', _anchor='team'))
+
+@app.route("/Services")
+def Services():
+    # redirect to services id of  home page
+    return redirect(url_for('home', _anchor='Services'))
+
+@app.route("/Testimonials")
+def Testimonials():
+    # redirect to testimonials id of  home page
+    return redirect(url_for('home', _anchor='Testimonials'))
+
+def main():
+    app.run(debug=True,port = 8080)
 
 if __name__ == "__main__":
     main()
+    # serve(app, host='
+
+
+
+

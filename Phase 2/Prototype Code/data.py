@@ -577,9 +577,15 @@ def db_data():
     # Fetch data from the database
     filenames_data, lat_lon_data = fetch_lat_lon_from_db()
 
+    # get total number of plastic 
+    total_plastic = 0
+    for i in range(len(filenames_data)):
+        total_plastic += filenames_data[i][1]
+
     d_b = {
         "filenames": filenames_data,
-        "lat_lon": lat_lon_data
+        "lat_lon": lat_lon_data,
+        "total_plastic": total_plastic
     }
 
     return jsonify(d_b)

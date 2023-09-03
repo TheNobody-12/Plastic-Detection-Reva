@@ -37,6 +37,7 @@ body {
     .navbar-sections {
     display: flex;
     gap: 20px;
+    text-decoration:none;
     }
 
     .navbar-section {
