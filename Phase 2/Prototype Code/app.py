@@ -330,7 +330,7 @@ def Bubble_map(db_name):
                                     'Latitude: %{lat}<br>' +
                                     'Longitude: %{lon}<br>',
                         text=df['filename'])
-    
+   
     # Bar plot
     bar_fig = px.bar(df, x='filename', y='Plastic_count', color='Plastic_count', color_continuous_scale='plasma')
     # add filename to the hover data
@@ -339,19 +339,17 @@ def Bubble_map(db_name):
                         text=df['filename'])
     # line plot
     line_fig = px.line(df, x='filename', y='Plastic_count')
-    
-    # convert the plots to html
+
+  
     mapbox_plot_div = mapbox_fig.to_html(full_html=False)
     bar_plot_div = bar_fig.to_html(full_html=False)
     line_plot_div = line_fig.to_html(full_html=False)
+    # dist_plot_div = dist_fig.to_html(full_html=False)
 
 
     return mapbox_plot_div, bar_plot_div, line_plot_div
 
-
-
 """
-
 #######################################################################################################################################################################333
 THIS SECTION CONTAIN DATA BASE RELATED CODE
 
