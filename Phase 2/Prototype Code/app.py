@@ -1,7 +1,6 @@
 import onnxruntime as ort
 from flask import request, Flask, jsonify, render_template,session,redirect,url_for,flash
 # import session
-from flask_sqlalchemy import SQLAlchemy
 import bcrypt
 from waitress import serve
 from PIL import Image
@@ -12,9 +11,7 @@ import numpy as np
 import exifread
 import sqlite3
 from fractions import Fraction
-import os
-import time
-import uuid
+
 
 # use geopy to get location from lat and lon
 from geopy.geocoders import Nominatim
@@ -338,16 +335,14 @@ def Bubble_map(db_name):
                                     'Plastic Count: %{y:,}<br>',
                         text=df['filename'])
     # line plot
-    line_fig = px.line(df, x='filename', y='Plastic_count')
 
   
     mapbox_plot_div = mapbox_fig.to_html(full_html=False)
     bar_plot_div = bar_fig.to_html(full_html=False)
-    line_plot_div = line_fig.to_html(full_html=False)
     # dist_plot_div = dist_fig.to_html(full_html=False)
 
 
-    return mapbox_plot_div, bar_plot_div, line_plot_div
+    return mapbox_plot_div, bar_plot_div
 
 """
 #######################################################################################################################################################################333
@@ -616,8 +611,8 @@ def db():
 
 @app.route("/visualize")
 def bubblemap():
-    mapbox, bar, line = Bubble_map(db_path)
-    return render_template('visualize.html', mapbox_plot_div=mapbox, bar_plot_div=bar, line_plot_div=line)
+    mapbox, bar = Bubble_map(db_path)
+    return render_template('visualize.html', mapbox_plot_div=mapbox, bar_plot_div=bar)
 
 @app.route("/locate")
 def locate():

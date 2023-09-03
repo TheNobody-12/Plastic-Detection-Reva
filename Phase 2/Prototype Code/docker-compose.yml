@@ -1,0 +1,11 @@
+version: '1.0'
+
+services:
+  revaapp:
+    container_name: revaapp
+    image: plastic_detection/revaapp
+    ports:
+      - "80:80"
+    build:
+      context: .
+      dockerfile: Dockerfile
