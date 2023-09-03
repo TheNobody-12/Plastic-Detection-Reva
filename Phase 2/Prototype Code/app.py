@@ -18,7 +18,7 @@ import uuid
 
 # use geopy to get location from lat and lon
 from geopy.geocoders import Nominatim
-geolocator = Nominatim(user_agent="object-detection-app_1}")
+geolocator = Nominatim(user_agent="object-detection-app")
 
 
 app = Flask(__name__)
@@ -689,6 +689,31 @@ def Services():
 def Testimonials():
     # redirect to testimonials id of  home page
     return redirect(url_for('home', _anchor='Testimonials'))
+
+@app.route("/log_about")
+def log_about():
+    # redirect to about us id of  home page
+    return redirect(url_for('dashboard', _anchor='AboutUs'))
+
+@app.route("/log_contact")
+def log_contact():
+    # redirect to contact us id of  home page
+    return redirect(url_for('dashboard', _anchor='Contact'))
+
+@app.route("/log_team")
+def log_team():
+    # redirect to team id of  home page
+    return redirect(url_for('dashboard', _anchor='team'))
+
+@app.route("/log_Services")
+def log_Services():
+    # redirect to services id of  home page
+    return redirect(url_for('dashboard', _anchor='Services'))
+
+@app.route("/log_Testimonials")
+def log_Testimonials():
+    # redirect to testimonials id of  home page
+    return redirect(url_for('dashboard', _anchor='Testimonials'))
 
 def main():
     app.run(debug=True,port = 8080)

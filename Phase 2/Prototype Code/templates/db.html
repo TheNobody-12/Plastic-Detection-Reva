@@ -85,18 +85,17 @@
             </div>
             <div id="mainListDiv" class="main_list">
                 <ul class="navlinks">
-                    <li><a href="#AboutUs">About Us</a></li>
+                    <li><a href="/log_about">About Us</a></li>
                     <li class="dropdown">
-                        <a href="#Services">Our Services</a>
+                    <a href="/log_Services">Our Services</a>
                         <div class="dropdown-content">
                             <a href="/db">Database</a>
                             <a href="/predict">Detect Plastic</a>
                             <a href="/visualize">Visualize</a>
-                        </div>
-                    </li>
-                    <li><a href="#Testimonials">Testimonials</a></li>
-                    <li><a href="#team">Our Team</a></li>
-                    <li><a href="#Contact">Contact Us</a></li>
+                        </div></li>
+                    <li><a href="/log_Testimonials">Testimonials</a></li>
+                    <li><a href="/log_team">Our Team</a></li>
+                    <li><a href="/log_contact">Contact Us</a></li>
                     <li><a href="/login_reg">Log Out</a></li>
                     <!-- <li><a href="https://github.com/TheNobody-12/Plastic-Detection-Reva">Info</a></li> -->
                 </ul>
@@ -109,7 +108,7 @@
 <center>
     <h1 style="margin: 40px 0px;">Database Data Table</h1>
 </center>
-<div class="data" id="databaseTableDiv"></div>
+<div class="data" id="databaseTableDiv" style="margin:0 40px;"></div>
 
 <div class="plasticCount">
     <p style=" color:black; font-size: 20px;text-align: center;"> Total Number of Plastic Detected: <b><span id="totalPlasticDiv"></b></span></p>
@@ -178,7 +177,7 @@
             // Create and populate the Filenames table
             const filenamesTable = document.createElement("table");
             filenamesTable.classList.add("table", "table-striped");
-            const filenamesHeaderRow = createRow(["Unique Filename", "Number of Occurrences"]);
+            const filenamesHeaderRow = createRow(["Unique Filename", "Number of Plastic detected"]);
             filenamesHeaderRow.classList.add("table-header");
             filenamesTable.appendChild(filenamesHeaderRow);
             filenamesData.forEach((filenameData) => {
@@ -282,10 +281,10 @@
                     <center>
                     <h3>Useful Links</h3>
                     <ul>
-                        <li><a href="#hero">Home</a></li>
-                        <li><a href="#about">About us</a></li>
-                        <li><a href="#team">Team</a></li>
-                        <li><a href="#Types">Algorithms</a></li>
+                        <li><a href="/dashboard">Home</a></li>
+                        <li><a href="/log_about">About us</a></li>
+                        <li><a href="/log_team">Team</a></li>
+                        <li><a href="/log_Services">Our Services</a></li>
                     </ul>
                 </center>
                 </div>
@@ -306,7 +305,7 @@
                         Raisan Village<br>
                         Gandhinagar - 382007<br>
                         <strong>Phone:</strong> +91 7923275300<br>
-                        <strong>Email:</strong> <a href="mailto:ITAdmin@pdpu.ac.in">ITAdmin@pdpu.ac.in</a><br>
+                        <strong>Email:</strong><a href="mailto:ITAdmin@pdpu.ac.in" style="color: #000000;">ITAdmin@pdpu.ac.in</a><br>
                     </address>
                 </center>
                 </div>
